@@ -1,0 +1,149 @@
+Here are the C++ solutions for the problems you requested, with copiable complexity:
+
+1. Single Number
+Problem: Find the element that appears only once in an array where every other element appears twice.
+
+C++ Solution:
+
+cpp
+Copy code
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        int result = 0;
+        for (int num : nums) {
+            result ^= num; // XOR all elements, the result will be the single number
+        }
+        return result;
+    }
+};
+Time Complexity: O(n), where n is the length of the array. Space Complexity: O(1).
+
+2. Number of 1 Bits
+Problem: Count the number of '1' bits in an integer's binary representation.
+
+C++ Solution:
+
+cpp
+Copy code
+class Solution {
+public:
+    int hammingWeight(uint32_t n) {
+        int count = 0;
+        while (n != 0) {
+            count++;
+            n = n & (n - 1); // Remove the rightmost set bit
+        }
+        return count;
+    }
+};
+Time Complexity: O(k), where k is the number of 1-bits in the binary representation of the number (up to 32 for a 32-bit integer). Space Complexity: O(1).
+
+3. Counting Bits
+Problem: For each number in the range 0 to num, count the number of 1-bits in its binary representation.
+
+C++ Solution:
+
+cpp
+Copy code
+class Solution {
+public:
+    vector<int> countBits(int num) {
+        vector<int> bitsCount(num + 1, 0);
+        for (int i = 1; i <= num; i++) {
+            bitsCount[i] = bitsCount[i >> 1] + (i & 1); // Use previously computed values
+        }
+        return bitsCount;
+    }
+};
+Time Complexity: O(n), where n is the number num. Space Complexity: O(n).
+
+4. Reverse Bits
+Problem: Reverse the bits of a given 32-bit unsigned integer.
+
+C++ Solution:
+
+cpp
+Copy code
+class Solution {
+public:
+    uint32_t reverseBits(uint32_t n) {
+        uint32_t reversedBits = 0;
+        for (int i = 0; i < 32; i++) {
+            reversedBits <<= 1; // Left shift to make space for the next bit
+            reversedBits |= (n & 1); // Add the least significant bit of n to reversedBits
+            n >>= 1; // Right shift n to process the next bit
+        }
+        return reversedBits;
+    }
+};
+Time Complexity: O(1), since we're always processing 32 bits. Space Complexity: O(1).
+
+5. Missing Number
+Problem: Given an array of n distinct numbers taken from the range [0, n], find the one number that is missing.
+
+C++ Solution:
+
+cpp
+Copy code
+class Solution {
+public:
+    int missingNumber(vector<int>& nums) {
+        int missing = nums.size();
+        for (int i = 0; i < nums.size(); i++) {
+            missing ^= i ^ nums[i]; // XOR all indices and values, the missing number remains
+        }
+        return missing;
+    }
+};
+Time Complexity: O(n), where n is the length of the array. Space Complexity: O(1).
+
+6. Sum of Two Integers
+Problem: Given two integers a and b, return their sum without using the + or - operators.
+
+C++ Solution:
+
+cpp
+Copy code
+class Solution {
+public:
+    int getSum(int a, int b) {
+        while (b != 0) {
+            int carry = (a & b) << 1; // Calculate carry
+            a = a ^ b; // Add without carry
+            b = carry; // Set carry for the next iteration
+        }
+        return a;
+    }
+};
+Time Complexity: O(1), since we are using bitwise operations and it takes a constant number of steps. Space Complexity: O(1).
+
+7. Reverse Integer
+Problem: Reverse the digits of an integer.
+
+C++ Solution:
+
+cpp
+Copy code
+class Solution {
+public:
+    int reverse(int x) {
+        int reversed = 0;
+        while (x != 0) {
+            int digit = x % 10;
+            int newResult = reversed * 10 + digit;
+
+            // Check for overflow
+            if ((newResult - digit) / 10 != reversed) {
+                return 0;
+            }
+
+            reversed = newResult;
+            x /= 10;
+        }
+        return reversed;
+    }
+};
+Time Complexity: O(log(x)), where x is the input number. Each division reduces the number by a factor of 10. Space Complexity: O(1).
+
+Each of these C++ solutions efficiently solves the respective problem with optimal time and space complexity.

@@ -1,0 +1,649 @@
+https://leetcode.com/problems/climbing-stairs/
+Input: n = 2
+Output: 2
+Explanation: There are two ways to climb to the top.
+1. 1 step + 1 step
+2. 2 steps
+
+class Solution {
+    public int climbStairs(int n) {
+        if (n <= 2) {
+            return n;
+        }
+
+        int[] dp = new int[n];
+        dp[0] = 1;
+        dp[1] = 2;
+
+        for (int i = 2 ;i < n; i++) {
+            dp[i] = dp[i-1]+dp[i-2];
+        }
+
+        return dp[n-1];
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        int stairs = 4;
+        int ways = solution.climbStairs(stairs);
+        System.out.println("Number of distinct ways to climb " + stairs + " stairs: " + ways);
+    }
+}
+
+In this solution, we have a function called climbStairs that calculates the number of distinct ways to climb the stairs.
+
+We handle the base cases where the number of stairs is 1 or 2. In these cases, there are exactly 1 and 2 distinct ways, respectively.
+
+We create an array dp to store the number of distinct ways to reach each step. We initialize dp[1] to 1 and dp[2] to 2.
+
+We then iterate from step 3 to the target step n and calculate the number of distinct ways to reach each step by summing the number of ways to reach the previous two steps.
+
+Finally, we return dp[n], which represents the number of distinct ways to reach the top of the stairs.
+
+The time complexity of this solution is O(n), where n is the number of stairs. We perform a single pass through the stairs to calculate the number of ways. The space complexity is O(n) as well since we use an array of size n+1 to store the number of ways to reach each step.
+
+
+
+https://leetcode.com/problems/min-cost-climbing-stairs/
+Input: cost = [10,15,20]
+Output: 15
+Explanation: You will start at index 1.
+- Pay 15 and climb two steps to reach the top.
+The total cost is 15.
+
+class Solution {
+    public int minCostClimbingStairs(int[] cost) {
+        int n = cost.length;
+
+        // Create an array to store the minimum cost to reach each step
+        int[] dp = new int[n];
+
+        // Base cases
+        dp[0] = cost[0];
+        dp[1] = cost[1];
+
+        // Calculate the minimum cost for each step , Let dp[i] be the cost to climb the i-th staircase to from 0-th or 1-th step. Hence dp[i] = cost[i] + min(dp[i-1], dp[i-2]). 
+        for (int i = 2; i < n; i++) {
+            dp[i] = cost[i] + Math.min(dp[i - 1], dp[i - 2]);
+        }
+
+        // The minimum cost to reach the top is the minimum between the last two steps
+        return Math.min(dp[n - 1], dp[n - 2]);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        int[] cost = {10, 15, 20};
+        int minCost = solution.minCostClimbingStairs(cost);
+        System.out.println("Minimum cost to climb the stairs: " + minCost);
+    }
+}
+
+
+In this solution, we have a function called minCostClimbingStairs that calculates the minimum cost to climb the stairs.
+
+We create an array dp to store the minimum cost to reach each step. We initialize the base cases dp[0] and dp[1] with the costs of the first and second steps, respectively.
+
+Then, we iterate from step 2 to the last step and calculate the minimum cost to reach each step by adding the cost of the current step to the minimum cost of reaching the previous two steps.
+
+Finally, we return the minimum cost between the last two steps, which represents the minimum cost to reach the top of the stairs.
+
+The time complexity of this solution is O(n), where n is the number of steps. We perform a single pass through the steps to calculate the minimum cost. The space complexity is O(n) as well since we use an array of size n to store the minimum cost for each step.
+
+
+
+https://leetcode.com/problems/house-robber/
+Input: nums = [1,2,3,1]
+Output: 4
+Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+Total amount you can rob = 1 + 3 = 4.
+
+class Solution {
+    public int rob(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+
+        int n = nums.length;
+
+        // Create an array to store the maximum stolen amount for each house
+        int[] dp = new int[n];
+
+        // Base cases
+        dp[0] = nums[0];
+        dp[1] = Math.max(nums[0], nums[1]);
+
+        // Calculate the maximum stolen amount for each house
+        for (int i = 2; i < n; i++) {
+            dp[i] = Math.max(nums[i] + dp[i - 2], dp[i - 1]);
+        }
+
+        // The maximum stolen amount is the last element in the dp array
+        return dp[n - 1];
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        int[] nums = {1, 2, 3, 1};
+        int maxAmount = solution.rob(nums);
+        System.out.println("Maximum stolen amount: " + maxAmount);
+    }
+}
+
+
+In this solution, we have a function called rob that calculates the maximum stolen amount.
+
+We handle the base cases where the input array is empty or has only one element.
+
+We create an array dp to store the maximum stolen amount for each house. We initialize the base cases dp[0] and dp[1] with the values of the first and second houses, respectively.
+
+Then, we iterate from the third house to the last house and calculate the maximum stolen amount for each house. We have two choices at each house: either rob the current house and add its value to the maximum stolen amount of the previous non-adjacent house (two houses before), or skip the current house and take the maximum stolen amount of the previous house.
+
+Finally, we return the maximum stolen amount, which is the last element in the dp array.
+
+The time complexity of this solution is O(n), where n is the number of houses. We perform a single pass through the houses to calculate the maximum stolen amount. The space complexity is O(n) as well since we use an array of size n to store the maximum stolen amount for each house.
+
+
+
+https://leetcode.com/problems/house-robber-ii/
+Input: nums = [2,3,2]
+Output: 3
+Explanation: You cannot rob house 1 (money = 2) and then rob house 3 (money = 2), because they are adjacent houses.
+
+
+
+To solve the "House Robber II" problem from LeetCode, we can extend the approach used in the "House Robber" problem by considering two scenarios: either the first house is robbed and the last house is not, or the first house is not robbed and the last house is. We can then apply the dynamic programming approach to calculate the maximum stolen amount for each scenario and return the maximum of the two. Here's a Java program that solves the "House Robber II" problem:
+
+In this solution, we have a function called rob that calculates the maximum stolen amount.
+
+We handle the base cases where the input array is empty or has only one element.
+
+We calculate two scenarios:
+
+The maximum stolen amount if the first house is robbed and the last house is not. To calculate this, we call the helper function robHelper with the range from the first house to the second-to-last house.
+The maximum stolen amount if the first house is not robbed and the last house is. To calculate this, we call the helper function robHelper with the range from the second house to the last house.
+The helper function robHelper follows the same dynamic programming approach used in the "House Robber" problem. It calculates the maximum stolen amount for each house within the given range.
+
+Finally, we return the maximum of the two scenarios calculated in the rob function.
+
+The time complexity of this solution is O(n), where n is the number of houses. We perform two passes through the houses: one for each scenario. The space complexity is O(n) as well since we use an array of size n to store the maximum stolen amount for each house within the given range.
+
+
+
+
+
+
+
+class Solution {
+    public int rob(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        } else if (nums.length == 1) {
+            return nums[0];
+        }
+
+        // Calculate the maximum stolen amount if the first house is robbed and the last house is not
+        int max1 = robHelper(nums, 0, nums.length - 2);
+
+        // Calculate the maximum stolen amount if the first house is not robbed and the last house is
+        int max2 = robHelper(nums, 1, nums.length - 1);
+
+        // Return the maximum of the two scenarios
+        return Math.max(max1, max2);
+    }
+
+    private int robHelper(int[] nums, int start, int end) {
+        int n = end - start + 1;
+
+        // Create an array to store the maximum stolen amount for each house
+        int[] dp = new int[n];
+
+        // Base cases
+        dp[0] = nums[start];
+        dp[1] = Math.max(nums[start], nums[start + 1]);
+
+        // Calculate the maximum stolen amount for each house
+        for (int i = 2; i < n; i++) {
+            dp[i] = Math.max(nums[start + i] + dp[i - 2], dp[i - 1]);
+        }
+
+        // The maximum stolen amount is the last element in the dp array
+        return dp[n - 1];
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        int[] nums = {2, 3, 2};
+        int maxAmount = solution.rob(nums);
+        System.out.println("Maximum stolen amount: " + maxAmount);
+    }
+}
+
+
+
+https://leetcode.com/problems/longest-palindromic-substring/
+
+Input: s = "babad"
+Output: "bab"
+Explanation: "aba" is also a valid answer.
+
+
+To solve the "Longest Palindromic Substring" problem from LeetCode, we can use a dynamic programming approach. We can define a 2D boolean array dp where dp[i][j] represents whether the substring from index i to index j is a palindrome. By iterating through the input string, we can update the dp array based on the following conditions:
+
+If s.charAt(i) == s.charAt(j) and dp[i+1][j-1] is true (i.e., the inner substring is a palindrome), then dp[i][j] is also true, indicating that the substring from index i to index j is a palindrome.
+If s.charAt(i) == s.charAt(j) and j-i <= 2, then dp[i][j] is true, indicating that the substring from index i to index j is a palindrome (for substrings of length 1 or 2).
+We can maintain two variables start and maxLen to keep track of the starting index and length of the longest palindromic substring found so far. By updating these variables during the iteration, we can find the longest palindromic substring in the input string. Here's a Java program that solves the "Longest Palindromic Substring" problem:
+
+
+
+
+
+class Solution {
+    public String longestPalindrome(String s) {
+        if (s == null || s.length() == 0) {
+            return "";
+        }
+        
+        int n = s.length();
+        boolean[][] dp = new boolean[n][n];
+        int start = 0;
+        int maxLen = 1;
+        
+        // All substrings of length 1 are palindromes
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = true;
+        }
+        
+        // Check substrings of length 2
+        for (int i = 0; i < n - 1; i++) {
+            if (s.charAt(i) == s.charAt(i + 1)) {
+                dp[i][i + 1] = true;
+                start = i;
+                maxLen = 2;
+            }
+        }
+        
+        // Check substrings of length greater than 2
+        for (int len = 3; len <= n; len++) {
+            for (int i = 0; i <= n - len; i++) {
+                int j = i + len - 1;
+                if (s.charAt(i) == s.charAt(j) && dp[i + 1][j - 1]) {
+                    dp[i][j] = true;
+                    start = i;
+                    maxLen = len;
+                }
+            }
+        }
+        
+        return s.substring(start, start + maxLen);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        String s = "babad";
+        String longestPalindrome = solution.longestPalindrome(s);
+        System.out.println("Longest Palindromic Substring: " + longestPalindrome);
+    }
+}
+
+
+
+https://leetcode.com/problems/palindromic-substrings/
+Input: s = "abc"
+Output: 3
+Explanation: Three palindromic strings: "a", "b", "c".
+
+To solve the "Palindromic Substrings" problem from LeetCode, we can use a dynamic programming approach. We can define a 2D boolean array dp where dp[i][j] represents whether the substring from index i to index j is a palindrome. By iterating through the input string, we can update the dp array based on the following conditions:
+
+If s.charAt(i) == s.charAt(j) and dp[i+1][j-1] is true (i.e., the inner substring is a palindrome), then dp[i][j] is also true, indicating that the substring from index i to index j is a palindrome.
+If s.charAt(i) == s.charAt(j) and j-i <= 2, then dp[i][j] is true, indicating that the substring from index i to index j is a palindrome (for substrings of length 1 or 2).
+We can maintain a count variable to keep track of the number of palindromic substrings found so far. By updating this count during the iteration, we can find the total count of palindromic substrings in the input string. Here's a Java program that solves the "Palindromic Substrings" problem:
+
+
+class Solution {
+    public int countSubstrings(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        
+        int n = s.length();
+        boolean[][] dp = new boolean[n][n];
+        int count = 0;
+        
+        // All substrings of length 1 are palindromes
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = true;
+            count++;
+        }
+        
+        // Check substrings of length 2
+        for (int i = 0; i < n - 1; i++) {
+            if (s.charAt(i) == s.charAt(i + 1)) {
+                dp[i][i + 1] = true;
+                count++;
+            }
+        }
+        
+        // Check substrings of length greater than 2
+        for (int len = 3; len <= n; len++) {
+            for (int i = 0; i <= n - len; i++) {
+                int j = i + len - 1;
+                if (s.charAt(i) == s.charAt(j) && dp[i + 1][j - 1]) {
+                    dp[i][j] = true;
+                    count++;
+                }
+            }
+        }
+        
+        return count;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        String s = "abc";
+        int count = solution.countSubstrings(s);
+        System.out.println("Count of Palindromic Substrings: " + count);
+    }
+}
+
+
+
+
+https://leetcode.com/problems/decode-ways/
+
+Input: s = "12"
+Output: 2
+Explanation: "12" could be decoded as "AB" (1 2) or "L" (12).
+
+To solve the "Decode Ways" problem from LeetCode, we can use a dynamic programming approach. We can define an array dp of size n+1, where dp[i] represents the number of ways to decode the substring up to index i. We can populate this array iteratively by considering different cases:
+
+If the current character s.charAt(i) is not '0', we can decode it as a single digit. In this case, dp[i] will be the same as dp[i-1] because we are just extending the previous decoding.
+
+If the current character s.charAt(i) is '0', we need to check if the previous character s.charAt(i-1) is '1' or '2'. If it is, we can combine the current '0' with the previous digit and decode them as a two-digit number. In this case, dp[i] will be the same as dp[i-2] because we are skipping the '0' and the previous digit.
+
+If the previous character s.charAt(i-1) is '1', or if it is '2' and the current character s.charAt(i) is between '1' and '6', we can decode the current two digits as a two-digit number. In this case, dp[i] will be the sum of dp[i-1] and dp[i-2] because we have two options: either extend the previous decoding or combine the two digits.
+
+By iterating through the input string and updating the dp array, we can find the number of ways to decode the given string. Here's a Java program that solves the "Decode Ways" problem:
+
+java
+Copy code
+class Solution {
+    public int numDecodings(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        
+        int n = s.length();
+        int[] dp = new int[n + 1];
+        dp[0] = 1; // Empty string has one way to decode
+        
+        // If the first character is '0', there are no ways to decode
+        dp[1] = s.charAt(0) == '0' ? 0 : 1;
+        
+        for (int i = 2; i <= n; i++) {
+            int oneDigit = Integer.parseInt(s.substring(i - 1, i));
+            int twoDigits = Integer.parseInt(s.substring(i - 2, i));
+            
+            if (oneDigit >= 1 && oneDigit <= 9) {
+                dp[i] += dp[i - 1];
+            }
+            
+            if (twoDigits >= 10 && twoDigits <= 26) {
+                dp[i] += dp[i - 2];
+            }
+        }
+        
+        return dp[n];
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        String s = "226";
+        int numDecodings = solution.numDecodings(s);
+        System.out.println("Number of Decodings: " + numDecodings);
+    }
+}
+In this solution, we have a function called numDecodings that calculates the number of ways to decode the given string.
+
+We handle the base cases where the input string is empty or starts with '0'.
+
+We create an array dp of size n+1, where n is the length of the input string. We initialize dp[0] as 1 to represent the empty string, and dp[1] as 0 or 1 depending on the first character.
+
+We iterate through the
+
+
+
+
+
+
+
+
+
+
+https://leetcode.com/problems/maximum-product-subarray/
+
+Input: nums = [2,3,-2,4]
+Output: 6
+Explanation: [2,3] has the largest product 6.
+
+o solve the "Maximum Product Subarray" problem from LeetCode, we can use a dynamic programming approach. We can define two variables maxProduct and minProduct to keep track of the maximum and minimum product subarray ending at the current index. We also have a variable maxProductSoFar to keep track of the maximum product subarray seen so far.
+
+At each index i, we update the maximum and minimum products based on the following conditions:
+
+If nums[i] is positive, we update the maximum product as max(nums[i], maxProduct * nums[i]) and the minimum product as min(nums[i], minProduct * nums[i]). This is because a positive number can increase the maximum product or decrease the minimum product.
+If nums[i] is negative, we update the maximum product as max(nums[i], minProduct * nums[i]) and the minimum product as min(nums[i], maxProduct * nums[i]). This is because a negative number can flip the sign and change the maximum and minimum products.
+After each update, we compare the current maximum product with maxProductSoFar and update it if necessary. By iterating through the input array, we can find the maximum product subarray. Here's a Java program that solves the "Maximum Product Subarray" problem:
+
+java
+Copy code
+class Solution {
+    public int maxProduct(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        int maxProduct = nums[0];
+        int minProduct = nums[0];
+        int maxProductSoFar = nums[0];
+        
+        for (int i = 1; i < nums.length; i++) {
+            int tempMaxProduct = maxProduct;
+            maxProduct = Math.max(nums[i], Math.max(maxProduct * nums[i], minProduct * nums[i]));
+            minProduct = Math.min(nums[i], Math.min(tempMaxProduct * nums[i], minProduct * nums[i]));
+            maxProductSoFar = Math.max(maxProductSoFar, maxProduct);
+        }
+        
+        return maxProductSoFar;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        int[] nums = {2, 3, -2, 4};
+        int maxProduct = solution.maxProduct(nums);
+        System.out.println("Maximum Product Subarray: " + maxProduct);
+    }
+}
+
+https://leetcode.com/problems/word-break/
+
+Input: s = "leetcode", wordDict = ["leet","code"]
+Output: true
+Explanation: Return true because "leetcode" can be segmented as "leet code".
+
+
+To solve the "Word Break" problem from LeetCode, we can use a dynamic programming approach. We can define an array dp of size n+1, where dp[i] represents whether the substring from index 0 to i-1 can be segmented into valid words.
+
+We initialize dp[0] as true to indicate that an empty string can be segmented. Then, we iterate through the input string from index 1 to n and update dp[i] based on the following conditions:
+
+For each index j from 0 to i-1, if dp[j] is true (indicating that the substring from index 0 to j-1 can be segmented) and the substring from index j to i-1 is a valid word, we set dp[i] as true.
+By the end of the iteration, dp[n] will represent whether the entire string can be segmented into valid words. Here's a Java program that solves the "Word Break" problem:
+
+java
+Copy code
+import java.util.*;
+
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        if (s == null || s.length() == 0) {
+            return false;
+        }
+        
+        int n = s.length();
+        boolean[] dp = new boolean[n + 1];
+        dp[0] = true; // Empty string can be segmented
+        
+        Set<String> wordSet = new HashSet<>(wordDict);
+        
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[j] && wordSet.contains(s.substring(j, i))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        
+        return dp[n];
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        String s = "leetcode";
+        List<String> wordDict = new ArrayList<>(Arrays.asList("leet", "code"));
+        boolean canBreak = solution.wordBreak(s, wordDict);
+        System.out.println("Can Break: " + canBreak);
+    }
+}
+In this solution, we have a function called wordBreak that checks if the given string can be segmented into valid words.
+
+We handle the base case where the input string is empty.
+
+We initialize the dp array of size n+1, where n is the length of the input string. We set dp[0] as true to indicate that an empty string can be segmented.
+
+We convert the wordDict list into a set for faster word lookup.
+
+We iterate through the input string from index 1 to n and the inner loop iterates from 0 to i-1. If dp[j] is true and the substring from index j to i-1 is a valid word, we set dp[i] as true.
+
+Finally, we return dp[n], which represents whether the entire string can be segmented into valid words.
+
+
+
+
+https://leetcode.com/problems/longest-increasing-subsequence/
+
+Input: nums = [10,9,2,5,3,7,101,18]
+Output: 4
+Explanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.
+
+To solve the "Longest Increasing Subsequence" problem from LeetCode, we can use a dynamic programming approach. We define an array dp of size n, where dp[i] represents the length of the longest increasing subsequence ending at index i.
+
+We initialize all elements of dp to 1 because the minimum length of an increasing subsequence is 1 (the element itself). Then, we iterate through the input array from index 1 to n and update dp[i] based on the following conditions:
+
+For each index j from 0 to i-1, if nums[i] > nums[j], we update dp[i] as Math.max(dp[i], dp[j] + 1). This means that we can extend the increasing subsequence ending at j by including the element at index i.
+After iterating through the entire array, the maximum value in dp will represent the length of the longest increasing subsequence. Here's a Java program that solves the "Longest Increasing Subsequence" problem:
+
+java
+Copy code
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        int n = nums.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1); // Initialize all elements to 1
+        
+        int maxLength = 1; // Minimum length is 1
+        
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            maxLength = Math.max(maxLength, dp[i]);
+        }
+        
+        return maxLength;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        int[] nums = {10, 9, 2, 5, 3, 7, 101, 18};
+        int maxLength = solution.lengthOfLIS(nums);
+        System.out.println("Length of Longest Increasing Subsequence: " + maxLength);
+    }
+}
+In this solution, we have a function called lengthOfLIS that calculates the length of the longest increasing subsequence.
+
+We handle the base case where the input array is empty.
+
+We initialize the dp array of size n, where n is the length of the input array. We fill all elements of dp with 1 because the minimum length of an increasing subsequence is 1.
+
+We iterate through the input array from index 1 to n and the inner loop iterates from 0 to i-1. If nums[i] is greater than nums[j], we update dp[i] as Math.max(dp[i], dp[j] + 1), indicating that we can extend the increasing subsequence ending at j by including the element at index i.
+
+After the inner loop, we update maxLength with the maximum value in dp, representing the length of the longest increasing subsequence.
+
+Finally, we return maxLength, which is the length of the longest increasing subsequence.
+
+https://leetcode.com/problems/partition-equal-subset-sum/
+Input: nums = [1,5,11,5]
+Output: true
+Explanation: The array can be partitioned as [1, 5, 5] and [11].
+
+
+public class Solution {
+    public boolean canPartition(int[] nums) {
+        int totalSum = 0;
+        for (int num : nums) {
+            totalSum += num;
+        }
+
+        if (totalSum % 2 != 0) {
+            return false; // If the total sum is odd, we can't divide it into equal subsets
+        }
+
+        int targetSum = totalSum / 2;
+        boolean[] dp = new boolean[targetSum + 1];
+        dp[0] = true;
+
+        for (int num : nums) {
+            for (int i = targetSum; i >= num; i--) {
+                dp[i] = dp[i] || dp[i - num];
+            }
+        }
+
+        return dp[targetSum];
+    }
+}
+We calculate the totalSum by summing all the elements in the nums array.
+If the totalSum is odd, we can't divide it into two equal subsets, so we return false.
+We initialize the targetSum as totalSum / 2, which represents the sum each subset should have if it is to be equal.
+We create a boolean array dp of size targetSum + 1 to store the states of the dynamic programming solution.
+We set dp[0] to true since we can form a subset with sum 0 by not choosing any element.
+We iterate over the elements in the nums array.
+For each element num, we iterate from targetSum down to num.
+We update the dp array by setting dp[i] to true if dp[i - num] is true. This means we can form a subset with sum i - num, so we can also form a subset with sum i by including the current num.
+Finally, we return dp[targetSum], which indicates whether it is possible to partition the array into two equal subsets.
+This optimized dynamic programming solution achieves a time complexity of O(n * targetSum), where n is the length of the nums array and targetSum is the target sum.

@@ -1,0 +1,509 @@
+
+1. Climbing Stairs Problem (LeetCode #70)
+For the climbing stairs problem, we can optimize the space complexity from O(n) to O(1) by using only two variables to store the last two results.
+
+Optimized C++ solution:
+
+cpp
+Copy code
+class Solution {
+public:
+    int climbStairs(int n) {
+        if (n == 1) return 1;
+        int prev2 = 1, prev1 = 2;
+        
+        for (int i = 3; i <= n; ++i) {
+            int current = prev1 + prev2;
+            prev2 = prev1;
+            prev1 = current;
+        }
+        
+        return prev1;
+    }
+};
+
+int main() {
+    Solution solution;
+    int n = 4;
+    int ways = solution.climbStairs(n);
+    cout << "Number of distinct ways to climb " << n << " stairs: " << ways << endl;
+}
+Time Complexity: O(n)
+Space Complexity: O(1)
+2. Min Cost Climbing Stairs (LeetCode #746)
+For the minimum cost climbing stairs problem, you can reduce the space complexity by storing only the last two computed values, similar to the climbing stairs problem.
+
+Optimized C++ solution:
+
+cpp
+Copy code
+class Solution {
+public:
+    int minCostClimbingStairs(vector<int>& cost) {
+        int n = cost.size();
+        if (n == 0) return 0;
+        if (n == 1) return cost[0];
+        
+        int prev2 = cost[0], prev1 = cost[1];
+        
+        for (int i = 2; i < n; ++i) {
+            int current = cost[i] + min(prev1, prev2);
+            prev2 = prev1;
+            prev1 = current;
+        }
+        
+        return min(prev1, prev2);
+    }
+};
+
+int main() {
+    Solution solution;
+    vector<int> cost = {10, 15, 20};
+    int minCost = solution.minCostClimbingStairs(cost);
+    cout << "Minimum cost to climb the stairs: " << minCost << endl;
+}
+Time Complexity: O(n)
+Space Complexity: O(1)
+3. House Robber Problem (LeetCode #198)
+For the house robber problem, you can optimize the space complexity by using two variables to track the maximum amounts stolen.
+
+Optimized C++ solution:
+
+cpp
+Copy code
+class Solution {
+public:
+    int rob(vector<int>& nums) {
+        int prev2 = 0, prev1 = 0;
+        
+        for (int num : nums) {
+            int current = max(prev1, prev2 + num);
+            prev2 = prev1;
+            prev1 = current;
+        }
+        
+        return prev1;
+    }
+};
+
+int main() {
+    Solution solution;
+    vector<int> nums = {1, 2, 3, 1};
+    int maxAmount = solution.rob(nums);
+    cout << "Maximum stolen amount: " << maxAmount << endl;
+}
+Time Complexity: O(n)
+Space Complexity: O(1)
+4. House Robber II Problem (LeetCode #213)
+In the "House Robber II" problem, the key idea is to handle two cases:
+
+Rob houses from the first to the second-last.
+Rob houses from the second to the last.
+You can reuse the House Robber I solution by splitting the problem into two subproblems.
+
+Optimized C++ solution:
+
+cpp
+Copy code
+class Solution {
+public:
+    int robHelper(vector<int>& nums, int start, int end) {
+        int prev2 = 0, prev1 = 0;
+        
+        for (int i = start; i <= end; ++i) {
+            int current = max(prev1, prev2 + nums[i]);
+            prev2 = prev1;
+            prev1 = current;
+        }
+        
+        return prev1;
+    }
+
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 0) return 0;
+        if (n == 1) return nums[0];
+        
+        // Rob first to second last
+        int max1 = robHelper(nums, 0, n - 2);
+        // Rob second to last
+        int max2 = robHelper(nums, 1, n - 1);
+        
+        return max(max1, max2);
+    }
+};
+
+int main() {
+    Solution solution;
+    vector<int> nums = {2, 3, 2};
+    int maxAmount = solution.rob(nums);
+    cout << "Maximum stolen amount: " << maxAmount << endl;
+}
+Time Complexity: O(n)
+Space Complexity: O(1)
+5. Longest Palindromic Substring (LeetCode #5)
+To solve the longest palindromic substring problem, we can use expand around center to reduce both space and time complexity compared to the 2D DP approach. The time complexity of this approach is still O(n^2), but the space complexity is O(1).
+
+Optimized C++ solution:
+
+cpp
+Copy code
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        if (s.empty()) return "";
+        
+        int start = 0, maxLength = 1;
+        
+        auto expandAroundCenter = [&](int left, int right) {
+            while (left >= 0 && right < s.length() && s[left] == s[right]) {
+                --left;
+                ++right;
+            }
+            return right - left - 1;
+        };
+        
+        for (int i = 0; i < s.length(); ++i) {
+            int len1 = expandAroundCenter(i, i);    // Odd length palindromes
+            int len2 = expandAroundCenter(i, i + 1); // Even length palindromes
+            
+            int len = max(len1, len2);
+            if (len > maxLength) {
+                maxLength = len;
+                start = i - (maxLength - 1) / 2;
+            }
+        }
+        
+        return s.substr(start, maxLength);
+    }
+};
+
+int main() {
+    Solution solution;
+    string s = "babad";
+    string longestPalindrome = solution.longestPalindrome(s);
+    cout << "Longest Palindromic Substring: " << longestPalindrome << endl;
+}
+Time Complexity: O(n^2)
+Space Complexity: O(1)
+
+
+
+Palindromic Substrings
+Problem: Count the number of palindromic substrings in a given string.
+
+Solution: We use dynamic programming (DP) to track which substrings are palindromes.
+
+java
+Copy code
+class Solution {
+    public int countSubstrings(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+
+        int n = s.length();
+        boolean[][] dp = new boolean[n][n];
+        int count = 0;
+
+        // All substrings of length 1 are palindromes
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = true;
+            count++;
+        }
+
+        // Check substrings of length 2
+        for (int i = 0; i < n - 1; i++) {
+            if (s.charAt(i) == s.charAt(i + 1)) {
+                dp[i][i + 1] = true;
+                count++;
+            }
+        }
+
+        // Check substrings of length > 2
+        for (int len = 3; len <= n; len++) {
+            for (int i = 0; i <= n - len; i++) {
+                int j = i + len - 1;
+                if (s.charAt(i) == s.charAt(j) && dp[i + 1][j - 1]) {
+                    dp[i][j] = true;
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+}
+Time Complexity:
+
+O(n^2), where n is the length of the string.
+We are iterating through each possible substring and checking if it is a palindrome.
+Space Complexity:
+
+O(n^2), as we maintain a 2D array dp of size n x n.
+2. Decode Ways
+Problem: Given a string s containing digits, determine the total number of ways to decode it.
+
+Solution: Use dynamic programming to keep track of the number of ways to decode the substring up to each position.
+
+java
+Copy code
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    int numDecodings(string s) {
+        if (s.empty()) {
+            return 0;
+        }
+
+        int n = s.size();
+        vector<int> dp(n + 1, 0);
+        dp[0] = 1; // Base case for empty string
+
+        // If the first character is '0', there's no valid decoding
+        dp[1] = s[0] == '0' ? 0 : 1;
+
+        for (int i = 2; i <= n; i++) {
+            int oneDigit = stoi(s.substr(i - 1, 1));
+            int twoDigits = stoi(s.substr(i - 2, 2));
+
+            if (oneDigit >= 1 && oneDigit <= 9) {
+                dp[i] += dp[i - 1];
+            }
+
+            if (twoDigits >= 10 && twoDigits <= 26) {
+                dp[i] += dp[i - 2];
+            }
+        }
+
+        return dp[n];
+    }
+};
+
+int main() {
+    Solution solution;
+    string s = "226";
+    cout << "Number of decodings: " << solution.numDecodings(s) << endl;
+    return 0;
+}
+
+Time Complexity:
+
+O(n), where n is the length of the string.
+We iterate over the string and compute values for each position.
+Space Complexity:
+
+O(n), as we maintain a 1D DP array of size n+1.
+3. Maximum Product Subarray
+Problem: Find the maximum product subarray in a given array of integers.
+
+Solution: Track the maximum and minimum products up to each element to account for negative numbers affecting the product.
+
+java
+Copy code
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        if (nums.empty()) {
+            return 0;
+        }
+
+        int maxProduct = nums[0], minProduct = nums[0], maxSoFar = nums[0];
+
+        for (size_t i = 1; i < nums.size(); i++) {
+            if (nums[i] < 0) {
+                swap(maxProduct, minProduct);
+            }
+
+            maxProduct = max(nums[i], maxProduct * nums[i
+
+Time Complexity:
+
+O(n), where n is the length of the array.
+We only make one pass through the array.
+Space Complexity:
+
+O(1), as we only use a constant amount of extra space (just a few variables).
+4. Word Break
+Problem: Determine if a string can be segmented into a space-separated sequence of one or more dictionary words.
+
+Solution: Use dynamic programming to check if substrings can be broken down into words from the dictionary.
+
+java
+Copy code
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        if (s.empty()) {
+            return false;
+        }
+
+        int n = s.size();
+        vector<bool> dp(n + 1, false);
+        dp[0] = true;
+
+        unordered_set<string> wordSet(wordDict.begin(), wordDict.end());
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[j] && wordSet.find(s.substr(j, i - j)) != wordSet.end()) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+
+        return dp[n];
+    }
+};
+
+int main() {
+    Solution solution;
+    string s = "leetcode";
+    vector<string> wordDict = {"leet", "code"};
+
+    if (solution.wordBreak(s, wordDict)) {
+        cout << "The string can be segmented into words from the dictionary." << endl;
+    } else {
+        cout << "The string cannot be segmented into words from the dictionary." << endl;
+    }
+
+    return 0;
+}
+
+Time Complexity:
+
+O(n^2), where n is the length of the string.
+We have a nested loop checking all possible substrings.
+Space Complexity:
+
+O(n), as we maintain a 1D DP array of size n+1 and a set for the word dictionary.
+5. Longest Increasing Subsequence
+Problem: Find the length of the longest increasing subsequence in a given array of integers.
+
+Solution: Use dynamic programming to calculate the length of the longest increasing subsequence up to each element.
+
+java
+Copy code
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        if (nums.empty()) {
+            return 0;
+        }
+
+        int n = nums.size();
+        vector<int> dp(n, 1); // Initialize all elements to 1
+
+        int maxLength = 1; // Minimum length is 1
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = max(dp[i], dp[j] + 1);
+                }
+            }
+            maxLength = max(maxLength, dp[i]);
+        }
+
+        return maxLength;
+    }
+};
+
+int main() {
+    Solution solution;
+    vector<int> nums = {10, 9, 2, 5, 3, 7, 101, 18};
+
+    cout << "Length of Longest Increasing Subsequence: " << solution.lengthOfLIS(nums) << endl;
+
+    return 0;
+}
+
+Time Complexity:
+
+O(n^2), where n is the length of the array.
+We use two loops to compare each pair of elements.
+Space Complexity:
+
+O(n), as we maintain a DP array of size n.
+6. Partition Equal Subset Sum
+Problem: Given an array, determine if it can be partitioned into two subsets with equal sum.
+
+Solution: Use dynamic programming to check if there is a subset whose sum is equal to half of the total sum.
+
+java
+Copy code
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    bool canPartition(vector<int>& nums) {
+        int totalSum = 0;
+        for (int num : nums) {
+            totalSum += num;
+        }
+
+        // If the total sum is odd, we cannot partition it into two equal subsets
+        if (totalSum % 2 != 0) {
+            return false;
+        }
+
+        int targetSum = totalSum / 2;
+        vector<bool> dp(targetSum + 1, false);
+        dp[0] = true; // Base case: sum of 0 is always achievable
+
+        for (int num : nums) {
+            for (int i = targetSum; i >= num; i--) {
+                dp[i] = dp[i] || dp[i - num];
+            }
+        }
+
+        return dp[targetSum];
+    }
+};
+
+int main() {
+    Solution solution;
+    vector<int> nums = {1, 5, 11, 5};
+
+    if (solution.canPartition(nums)) {
+        cout << "The array can be partitioned into two subsets with equal sum." << endl;
+    } else {
+        cout << "The array cannot be partitioned into two subsets with equal sum." << endl;
+    }
+
+    return 0;
+}
+
+Time Complexity:
+
+O(n * targetSum), where n is the number of elements in the array and targetSum is half of the total sum of the array.
+Space Complexity:
+
+O(targetSum), as we maintain a DP array of size targetSum + 1.
+These solutions cover the problems with their respective time and space complexities. The DP approach ensures that we are efficiently solving each problem, and the complexities reflect the iterative nature of the solutions.
+
+
+

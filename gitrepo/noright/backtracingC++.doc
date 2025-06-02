@@ -1,0 +1,191 @@
+Below are the C++ solutions for each problem with their corresponding complexities.
+
+1. Subsets
+Problem Link
+
+C++ Solution:
+
+cpp
+Copy code
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<vector<int>> subsets;
+        vector<int> currentSubset;
+        backtrack(nums, 0, currentSubset, subsets);
+        return subsets;
+    }
+
+private:
+    void backtrack(vector<int>& nums, int start, vector<int>& currentSubset, vector<vector<int>>& subsets) {
+        subsets.push_back(currentSubset);
+        for (int i = start; i < nums.size(); i++) {
+            currentSubset.push_back(nums[i]);
+            backtrack(nums, i + 1, currentSubset, subsets);
+            currentSubset.pop_back();
+        }
+    }
+};
+Complexity:
+
+Time Complexity: O(2^n) - Each element can either be included or not included.
+Space Complexity: O(2^n) - Required to store all subsets.
+2. Combination Sum
+Problem Link
+
+C++ Solution:
+
+cpp
+Copy code
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        vector<vector<int>> combinations;
+        vector<int> currentCombination;
+        backtrack(candidates, target, 0, currentCombination, combinations);
+        return combinations;
+    }
+
+private:
+    void backtrack(vector<int>& candidates, int target, int start, vector<int>& currentCombination, vector<vector<int>>& combinations) {
+        if (target == 0) {
+            combinations.push_back(currentCombination);
+            return;
+        }
+        
+        for (int i = start; i < candidates.size(); i++) {
+            if (candidates[i] > target) break;
+            currentCombination.push_back(candidates[i]);
+            backtrack(candidates, target - candidates[i], i, currentCombination, combinations);
+            currentCombination.pop_back();
+        }
+    }
+};
+Complexity:
+
+Time Complexity: O(2^t) - t is the target value. Recursive calls depend on the target.
+Space Complexity: O(t) - Required for the recursion stack.
+3. Permutations
+Problem Link
+
+C++ Solution:
+
+cpp
+Copy code
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<vector<int>> permutations;
+        vector<int> currentPermutation;
+        vector<bool> used(nums.size(), false);
+        backtrack(nums, used, currentPermutation, permutations);
+        return permutations;
+    }
+
+private:
+    void backtrack(vector<int>& nums, vector<bool>& used, vector<int>& currentPermutation, vector<vector<int>>& permutations) {
+        if (currentPermutation.size() == nums.size()) {
+            permutations.push_back(currentPermutation);
+            return;
+        }
+
+        for (int i = 0; i < nums.size(); i++) {
+            if (used[i]) continue;
+            currentPermutation.push_back(nums[i]);
+            used[i] = true;
+            backtrack(nums, used, currentPermutation, permutations);
+            currentPermutation.pop_back();
+            used[i] = false;
+        }
+    }
+};
+Complexity:
+
+Time Complexity: O(n * n!) - There are n! permutations, each taking O(n) to build.
+Space Complexity: O(n) - Needed for the recursion stack and used array.
+4. Subsets II
+Problem Link
+
+C++ Solution:
+
+cpp
+Copy code
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        vector<vector<int>> subsets;
+        vector<int> currentSubset;
+        sort(nums.begin(), nums.end());
+        backtrack(nums, 0, currentSubset, subsets);
+        return subsets;
+    }
+
+private:
+    void backtrack(vector<int>& nums, int start, vector<int>& currentSubset, vector<vector<int>>& subsets) {
+        subsets.push_back(currentSubset);
+        for (int i = start; i < nums.size(); i++) {
+            if (i > start && nums[i] == nums[i - 1]) continue;
+            currentSubset.push_back(nums[i]);
+            backtrack(nums, i + 1, currentSubset, subsets);
+            currentSubset.pop_back();
+        }
+    }
+};
+Complexity:
+
+Time Complexity: O(2^n) - Each element may or may not be included.
+Space Complexity: O(2^n) - Needed to store all unique subsets.
+5. Combination Sum II
+Problem Link
+
+C++ Solution:
+
+cpp
+Copy code
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        vector<vector<int>> combinations;
+        vector<int> currentCombination;
+        sort(candidates.begin(), candidates.end());
+        backtrack(candidates, target, 0, currentCombination, combinations);
+        return combinations;
+    }
+
+private:
+    void backtrack(vector<int>& candidates, int target, int start, vector<int>& currentCombination, vector<vector<int>>& combinations) {
+        if (target == 0) {
+            combinations.push_back(currentCombination);
+            return;
+        }
+
+        for (int i = start; i < candidates.size(); i++) {
+            if (i > start && candidates[i] == candidates[i - 1]) continue;
+            if (candidates[i] > target) break;
+            currentCombination.push_back(candidates[i]);
+            backtrack(candidates, target - candidates[i], i + 1, currentCombination, combinations);
+            currentCombination.pop_back();
+        }
+    }
+};
+Complexity:
+
+Time Complexity: O(2^n) - Recursive combinations depend on target.
+Space Complexity: O(target) - Needed for recursion stack.

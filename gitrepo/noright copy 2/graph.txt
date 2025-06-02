@@ -1,0 +1,1095 @@
+https://leetcode.com/problems/number-of-islands/
+Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands.
+Input: grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+Output: 1
+
+
+The "Number of Islands" problem on LeetCode can be solved using a depth-first search (DFS) or breadth-first search (BFS) algorithm. Here's an optimized Java program to solve this problem using DFS:
+
+class Solution {
+    public int numIslands(char[][] grid) {
+        if (grid == null || grid.length == 0) {
+            return 0;
+        }
+        
+        int m = grid.length;
+        int n = grid[0].length;
+        int count = 0;
+        
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == '1') {
+                    count++;
+                    dfs(grid, i, j);
+                }
+            }
+        }
+        
+        return count;
+    }
+    
+    private void dfs(char[][] grid, int i, int j) {
+        int m = grid.length;
+        int n = grid[0].length;
+        
+        if (i < 0 || i >= m || j < 0 || j >= n || grid[i][j] != '1') {
+            return;
+        }
+        
+        grid[i][j] = '0'; // Mark the current cell as visited
+        
+        // Recursively search in all four adjacent cells
+        dfs(grid, i + 1, j);
+        dfs(grid, i - 1, j);
+        dfs(grid, i, j + 1);
+        dfs(grid, i, j - 1);
+    }
+}
+
+https://leetcode.com/problems/clone-graph/
+class Node {
+    public int val;
+    public List<Node> neighbors;
+}
+
+import java.util.*;
+
+class Node {
+    public int val;
+    public List<Node> neighbors;
+
+    public Node() {
+        val = 0;
+        neighbors = new ArrayList<Node>();
+    }
+
+    public Node(int _val) {
+        val = _val;
+        neighbors = new ArrayList<Node>();
+    }
+
+    public Node(int _val, ArrayList<Node> _neighbors) {
+        val = _val;
+        neighbors = _neighbors;
+    }
+}
+
+class Solution {
+    public Node cloneGraph(Node node) {
+        if (node == null) {
+            return null;
+        }
+        
+        Map<Node, Node> visited = new HashMap<>();
+        return cloneNode(node, visited);
+    }
+    
+    private Node cloneNode(Node node, Map<Node, Node> visited) {
+        if (visited.containsKey(node)) {
+            return visited.get(node);
+        }
+        
+        Node clone = new Node(node.val);
+        visited.put(node, clone);
+        
+        for (Node neighbor : node.neighbors) {
+            clone.neighbors.add(cloneNode(neighbor, visited));
+        }
+        
+        return clone;
+    }
+}
+
+
+https://leetcode.com/problems/max-area-of-island/
+
+class Solution {
+    public int maxAreaOfIsland(int[][] grid) {
+        int maxArea = 0;
+        int rows = grid.length;
+        int cols = grid[0].length;
+        
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (grid[i][j] == 1) {
+                    int area = calculateArea(grid, i, j, rows, cols);
+                    maxArea = Math.max(maxArea, area);
+                }
+            }
+        }
+        
+        return maxArea;
+    }
+    
+    private int calculateArea(int[][] grid, int row, int col, int rows, int cols) {
+        if (row < 0 || col < 0 || row >= rows || col >= cols || grid[row][col] == 0) {
+            return 0;
+        }
+        
+        grid[row][col] = 0; // mark as visited
+        
+        int area = 1;
+        area += calculateArea(grid, row - 1, col, rows, cols); // top
+        area += calculateArea(grid, row + 1, col, rows, cols); // bottom
+        area += calculateArea(grid, row, col - 1, rows, cols); // left
+        area += calculateArea(grid, row, col + 1, rows, cols); // right
+        
+        return area;
+    }
+}
+
+https://leetcode.com/problems/pacific-atlantic-water-flow/
+
+
+import java.util.*;
+
+class Solution {
+    public List<List<Integer>> pacificAtlantic(int[][] matrix) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return result;
+        }
+        
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        
+        boolean[][] canReachPacific = new boolean[rows][cols];
+        boolean[][] canReachAtlantic = new boolean[rows][cols];
+        
+        // Top and bottom boundaries
+        for (int col = 0; col < cols; col++) {
+            dfs(matrix, 0, col, Integer.MIN_VALUE, canReachPacific);
+            dfs(matrix, rows - 1, col, Integer.MIN_VALUE, canReachAtlantic);
+        }
+        
+        // Left and right boundaries
+        for (int row = 0; row < rows; row++) {
+            dfs(matrix, row, 0, Integer.MIN_VALUE, canReachPacific);
+            dfs(matrix, row, cols - 1, Integer.MIN_VALUE, canReachAtlantic);
+        }
+        
+        // Find the cells that can reach both oceans
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (canReachPacific[i][j] && canReachAtlantic[i][j]) {
+                    List<Integer> cell = new ArrayList<>();
+                    cell.add(i);
+                    cell.add(j);
+                    result.add(cell);
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    private void dfs(int[][] matrix, int row, int col, int prevHeight, boolean[][] canReach) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        
+        if (row < 0 || col < 0 || row >= rows || col >= cols || matrix[row][col] < prevHeight || canReach[row][col]) {
+            return;
+        }
+        
+        canReach[row][col] = true;
+        
+        dfs(matrix, row - 1, col, matrix[row][col], canReach); // Top
+        dfs(matrix, row + 1, col, matrix[row][col], canReach); // Bottom
+        dfs(matrix, row, col - 1, matrix[row][col], canReach); // Left
+        dfs(matrix, row, col + 1, matrix[row][col], canReach); // Right
+    }
+}
+
+
+https://leetcode.com/problems/surrounded-regions/
+class Solution {
+    public void solve(char[][] board) {
+        if (board == null || board.length == 0 || board[0].length == 0) {
+            return;
+        }
+        
+        int rows = board.length;
+        int cols = board[0].length;
+        
+        // Mark border cells and connected cells as 'B'
+        for (int i = 0; i < rows; i++) {
+            if (board[i][0] == 'O') {
+                dfs(board, i, 0);
+            }
+            if (board[i][cols - 1] == 'O') {
+                dfs(board, i, cols - 1);
+            }
+        }
+        
+        for (int j = 0; j < cols; j++) {
+            if (board[0][j] == 'O') {
+                dfs(board, 0, j);
+            }
+            if (board[rows - 1][j] == 'O') {
+                dfs(board, rows - 1, j);
+            }
+        }
+        
+        // Convert remaining 'O' cells to 'X', and restore 'B' cells to 'O'
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (board[i][j] == 'O') {
+                    board[i][j] = 'X';
+                } else if (board[i][j] == 'B') {
+                    board[i][j] = 'O';
+                }
+            }
+        }
+    }
+    
+    private void dfs(char[][] board, int row, int col) {
+        int rows = board.length;
+        int cols = board[0].length;
+        
+        if (row < 0 || col < 0 || row >= rows || col >= cols || board[row][col] != 'O') {
+            return;
+        }
+        
+        board[row][col] = 'B'; // Mark cell as 'B' (border or connected to border)
+        
+        // Explore adjacent cells in all four directions
+        dfs(board, row - 1, col); // Top
+        dfs(board, row + 1, col); // Bottom
+        dfs(board, row, col - 1); // Left
+        dfs(board, row, col + 1); // Right
+    }
+}
+
+https://leetcode.com/problems/rotting-oranges/
+
+import java.util.*;
+
+class Solution {
+    public int orangesRotting(int[][] grid) {
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+            return 0;
+        }
+        
+        int rows = grid.length;
+        int cols = grid[0].length;
+        
+        Queue<int[]> queue = new LinkedList<>();
+        int freshOranges = 0;
+        
+        // Enqueue all rotten oranges and count fresh oranges
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (grid[i][j] == 2) {
+                    queue.offer(new int[] {i, j});
+                } else if (grid[i][j] == 1) {
+                    freshOranges++;
+                }
+            }
+        }
+        
+        if (freshOranges == 0) {
+            return 0; // No fresh oranges to rot
+        }
+        
+        int minutes = 0;
+        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        
+        // Perform BFS to rot oranges
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            
+            for (int i = 0; i < size; i++) {
+                int[] curr = queue.poll();
+                int row = curr[0];
+                int col = curr[1];
+                
+                for (int[] direction : directions) {
+                    int newRow = row + direction[0];
+                    int newCol = col + direction[1];
+                    
+                    if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && grid[newRow][newCol] == 1) {
+                        grid[newRow][newCol] = 2;
+                        queue.offer(new int[] {newRow, newCol});
+                        freshOranges--;
+                    }
+                }
+            }
+            
+            if (!queue.isEmpty()) {
+                minutes++;
+            }
+        }
+        
+        return freshOranges == 0 ? minutes : -1; // Return -1 if there are fresh oranges left
+    }
+}
+
+
+https://leetcode.com/problems/walls-and-gates/
+
+import java.util.*;
+
+class Solution {
+    private static final int EMPTY = Integer.MAX_VALUE;
+    private static final int GATE = 0;
+    private static final int[] DIRECTIONS = {-1, 0, 1, 0, -1};
+    
+    public void wallsAndGates(int[][] rooms) {
+        if (rooms == null || rooms.length == 0 || rooms[0].length == 0) {
+            return;
+        }
+        
+        int rows = rooms.length;
+        int cols = rooms[0].length;
+        Queue<int[]> queue = new LinkedList<>();
+        
+        // Enqueue all gate positions
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (rooms[i][j] == GATE) {
+                    queue.offer(new int[]{i, j});
+                }
+            }
+        }
+        
+        while (!queue.isEmpty()) {
+            int[] position = queue.poll();
+            int row = position[0];
+            int col = position[1];
+            
+            // Explore the four neighbors
+            for (int i = 0; i < 4; i++) {
+                int newRow = row + DIRECTIONS[i];
+                int newCol = col + DIRECTIONS[i + 1];
+                
+                // Check if the new position is within the grid bounds and an empty room
+                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && rooms[newRow][newCol] == EMPTY) {
+                    rooms[newRow][newCol] = rooms[row][col] + 1; // Update the distance
+                    queue.offer(new int[]{newRow, newCol}); // Enqueue the new position
+                }
+            }
+        }
+    }
+}
+
+
+https://leetcode.com/problems/course-schedule/
+
+import java.util.*;
+
+class Solution {
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> adjacencyList = new ArrayList<>();
+        for (int i = 0; i < numCourses; i++) {
+            adjacencyList.add(new ArrayList<>());
+        }
+        
+        // Build the adjacency list
+        for (int[] prerequisite : prerequisites) {
+            int u = prerequisite[1];
+            int v = prerequisite[0];
+            adjacencyList.get(u).add(v);
+        }
+        
+        int[] visited = new int[numCourses]; // 0: unvisited, 1: visiting, 2: visited
+        
+        for (int i = 0; i < numCourses; i++) {
+            if (visited[i] == 0 && hasCycle(adjacencyList, visited, i)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    private boolean hasCycle(List<List<Integer>> adjacencyList, int[] visited, int node) {
+        visited[node] = 1; // Mark as visiting
+        
+        for (int neighbor : adjacencyList.get(node)) {
+            if (visited[neighbor] == 1) {
+                return true; // Cycle detected
+            }
+            
+            if (visited[neighbor] == 0 && hasCycle(adjacencyList, visited, neighbor)) {
+                return true;
+            }
+        }
+        
+        visited[node] = 2; // Mark as visited
+        return false;
+    }
+}
+
+
+https://leetcode.com/problems/course-schedule-ii/
+import java.util.*;
+
+class Solution {
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> adjacencyList = new ArrayList<>();
+        for (int i = 0; i < numCourses; i++) {
+            adjacencyList.add(new ArrayList<>());
+        }
+        
+        int[] inDegrees = new int[numCourses];
+        
+        // Build the adjacency list and calculate in-degrees
+        for (int[] prerequisite : prerequisites) {
+            int u = prerequisite[1];
+            int v = prerequisite[0];
+            adjacencyList.get(u).add(v);
+            inDegrees[v]++;
+        }
+        
+        Queue<Integer> queue = new LinkedList<>();
+        
+        // Enqueue all nodes with in-degree 0
+        for (int i = 0; i < numCourses; i++) {
+            if (inDegrees[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        
+        int[] result = new int[numCourses];
+        int index = 0;
+        
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            result[index++] = node;
+            
+            for (int neighbor : adjacencyList.get(node)) {
+                inDegrees[neighbor]--;
+                
+                // Enqueue the neighbor if its in-degree becomes 0
+                if (inDegrees[neighbor] == 0) {
+                    queue.offer(neighbor);
+                }
+            }
+        }
+        
+        // If not all nodes are visited, there is a cycle
+        if (index != numCourses) {
+            return new int[0];
+        }
+        
+        return result;
+    }
+}
+
+
+https://leetcode.com/problems/redundant-connection/
+class Solution {
+    public int[] findRedundantConnection(int[][] edges) {
+        int n = edges.length;
+        int[] parent = new int[n + 1];
+        
+        // Initialize the parent array with self-roots
+        for (int i = 1; i <= n; i++) {
+            parent[i] = i;
+        }
+        
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            
+            int rootU = findRoot(parent, u);
+            int rootV = findRoot(parent, v);
+            
+            // If both nodes have the same root, there is a cycle
+            if (rootU == rootV) {
+                return edge;
+            }
+            
+            // Union the two nodes
+            parent[rootV] = rootU;
+        }
+        
+        return new int[2];
+    }
+    
+    private int findRoot(int[] parent, int node) {
+        while (parent[node] != node) {
+            // Path compression optimization
+            parent[node] = parent[parent[node]];
+            node = parent[node];
+        }
+        
+        return node;
+    }
+}
+
+https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
+import java.util.*;
+
+class Solution {
+    public int countComponents(int n, int[][] edges) {
+        // Build the adjacency list representation of the graph
+        List<List<Integer>> adjacencyList = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adjacencyList.add(new ArrayList<>());
+        }
+        
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            adjacencyList.get(u).add(v);
+            adjacencyList.get(v).add(u);
+        }
+        
+        boolean[] visited = new boolean[n];
+        int count = 0;
+        
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) {
+                count++;
+                dfs(adjacencyList, i, visited);
+            }
+        }
+        
+        return count;
+    }
+    
+    private void dfs(List<List<Integer>> adjacencyList, int node, boolean[] visited) {
+        visited[node] = true;
+        
+        for (int neighbor : adjacencyList.get(node)) {
+            if (!visited[neighbor]) {
+                dfs(adjacencyList, neighbor, visited);
+            }
+        }
+    }
+}
+
+
+https://leetcode.com/problems/graph-valid-tree/
+import java.util.*;
+
+class Solution {
+    public boolean validTree(int n, int[][] edges) {
+        if (edges.length != n - 1) {
+            return false; // The graph must have exactly n-1 edges for it to be a tree
+        }
+        
+        // Build the adjacency list representation of the graph
+        List<List<Integer>> adjacencyList = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adjacencyList.add(new ArrayList<>());
+        }
+        
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            adjacencyList.get(u).add(v);
+            adjacencyList.get(v).add(u);
+        }
+        
+        boolean[] visited = new boolean[n];
+        
+        // Check if there is a cycle in the graph
+        if (hasCycle(adjacencyList, 0, visited, -1)) {
+            return false;
+        }
+        
+        // Check if all nodes are visited and connected
+        for (boolean nodeVisited : visited) {
+            if (!nodeVisited) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    private boolean hasCycle(List<List<Integer>> adjacencyList, int node, boolean[] visited, int parent) {
+        visited[node] = true;
+        
+        for (int neighbor : adjacencyList.get(node)) {
+            if (!visited[neighbor]) {
+                if (hasCycle(adjacencyList, neighbor, visited, node)) {
+                    return true;
+                }
+            } else if (neighbor != parent) {
+                return true; // Found a back edge, indicating a cycle
+            }
+        }
+        
+        return false;
+    }
+}
+
+
+https://leetcode.com/problems/word-ladder/
+import java.util.*;
+
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        Set<String> wordSet = new HashSet<>(wordList);
+        if (!wordSet.contains(endWord)) {
+            return 0; // endWord is not in the wordList
+        }
+        
+        Set<String> visited = new HashSet<>();
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(beginWord);
+        visited.add(beginWord);
+        
+        int transformations = 1;
+        
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            
+            for (int i = 0; i < size; i++) {
+                String currentWord = queue.poll();
+                
+                if (currentWord.equals(endWord)) {
+                    return transformations; // Found the endWord
+                }
+                
+                char[] wordChars = currentWord.toCharArray();
+                
+                for (int j = 0; j < wordChars.length; j++) {
+                    char originalChar = wordChars[j];
+                    
+                    for (char c = 'a'; c <= 'z'; c++) {
+                        wordChars[j] = c;
+                        String newWord = String.valueOf(wordChars);
+                        
+                        if (wordSet.contains(newWord) && !visited.contains(newWord)) {
+                            queue.offer(newWord);
+                            visited.add(newWord);
+                        }
+                    }
+                    
+                    wordChars[j] = originalChar;
+                }
+            }
+            
+            transformations++;
+        }
+        
+        return 0; // Cannot transform beginWord to endWord
+    }
+}
+
+
+https://leetcode.com/problems/reconstruct-itinerary/
+import java.util.*;
+
+class Solution {
+    public List<String> findItinerary(List<List<String>> tickets) {
+        Map<String, PriorityQueue<String>> graph = new HashMap<>();
+        List<String> itinerary = new ArrayList<>();
+        
+        // Build the adjacency list
+        for (List<String> ticket : tickets) {
+            String source = ticket.get(0);
+            String destination = ticket.get(1);
+            
+            if (!graph.containsKey(source)) {
+                graph.put(source, new PriorityQueue<>());
+            }
+            
+            graph.get(source).offer(destination);
+        }
+        
+        // Perform DFS starting from "JFK"
+        dfs(graph, "JFK", itinerary);
+        
+        // Reverse the itinerary to get the correct order
+        Collections.reverse(itinerary);
+        
+        return itinerary;
+    }
+    
+    private void dfs(Map<String, PriorityQueue<String>> graph, String airport, List<String> itinerary) {
+        PriorityQueue<String> neighbors = graph.get(airport);
+        
+        while (neighbors != null && !neighbors.isEmpty()) {
+            String nextAirport = neighbors.poll();
+            dfs(graph, nextAirport, itinerary);
+        }
+        
+        itinerary.add(airport);
+    }
+}
+
+https://leetcode.com/problems/cheapest-flights-within-k-stops/
+import java.util.*;
+
+class Solution {
+    class City {
+        int id;
+        int cost;
+        int stops;
+        
+        City(int id, int cost, int stops) {
+            this.id = id;
+            this.cost = cost;
+            this.stops = stops;
+        }
+    }
+    
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int K) {
+        // Build the adjacency list
+        Map<Integer, List<int[]>> adjacencyList = new HashMap<>();
+        for (int[] flight : flights) {
+            int source = flight[0];
+            int destination = flight[1];
+            int price = flight[2];
+            
+            if (!adjacencyList.containsKey(source)) {
+                adjacencyList.put(source, new ArrayList<>());
+            }
+            
+            adjacencyList.get(source).add(new int[]{destination, price});
+        }
+        
+        // Create a priority queue for the cities to visit
+        PriorityQueue<City> pq = new PriorityQueue<>((a, b) -> a.cost - b.cost);
+        pq.offer(new City(src, 0, -1));
+        
+        // Create a visited array to track visited cities and stops
+        boolean[][] visited = new boolean[n][K + 2];
+        
+        while (!pq.isEmpty()) {
+            City currentCity = pq.poll();
+            int currentId = currentCity.id;
+            int currentCost = currentCity.cost;
+            int currentStops = currentCity.stops;
+            
+            if (currentId == dst) {
+                return currentCost;
+            }
+            
+            if (currentStops < K) {
+                List<int[]> neighbors = adjacencyList.getOrDefault(currentId, new ArrayList<>());
+                for (int[] neighbor : neighbors) {
+                    int nextId = neighbor[0];
+                    int nextCost = currentCost + neighbor[1];
+                    int nextStops = currentStops + 1;
+                    
+                    if (!visited[nextId][nextStops]) {
+                        pq.offer(new City(nextId, nextCost, nextStops));
+                        visited[nextId][nextStops] = true;
+                    }
+                }
+            }
+        }
+        
+        return -1;
+    }
+}
+
+https://leetcode.com/problems/min-cost-to-connect-all-points/
+import java.util.*;
+
+class Solution {
+    class Edge implements Comparable<Edge> {
+        int src;
+        int dest;
+        int cost;
+        
+        Edge(int src, int dest, int cost) {
+            this.src = src;
+            this.dest = dest;
+            this.cost = cost;
+        }
+        
+        public int compareTo(Edge other) {
+            return this.cost - other.cost;
+        }
+    }
+    
+    class UnionFind {
+        int[] parent;
+        int[] rank;
+        
+        UnionFind(int n) {
+            parent = new int[n];
+            rank = new int[n];
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+                rank[i] = 0;
+            }
+        }
+        
+        int find(int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+        
+        void union(int x, int y) {
+            int rootX = find(x);
+            int rootY = find(y);
+            
+            if (rootX != rootY) {
+                if (rank[rootX] < rank[rootY]) {
+                    parent[rootX] = rootY;
+                } else if (rank[rootX] > rank[rootY]) {
+                    parent[rootY] = rootX;
+                } else {
+                    parent[rootY] = rootX;
+                    rank[rootX]++;
+                }
+            }
+        }
+    }
+    
+    public int minCostConnectPoints(int[][] points) {
+        int n = points.length;
+        List<Edge> edges = new ArrayList<>();
+        
+        // Build the edges
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int cost = Math.abs(points[i][0] - points[j][0]) + Math.abs(points[i][1] - points[j][1]);
+                edges.add(new Edge(i, j, cost));
+            }
+        }
+        
+        // Sort the edges in ascending order of cost
+        Collections.sort(edges);
+        
+        // Create a Union-Find data structure
+        UnionFind uf = new UnionFind(n);
+        
+        int minCost = 0;
+        int edgeCount = 0;
+        
+        // Process each edge in the sorted order
+        for (Edge edge : edges) {
+            int src = edge.src;
+            int dest = edge.dest;
+            int cost = edge.cost;
+            
+            if (uf.find(src) != uf.find(dest)) {
+                uf.union(src, dest);
+                minCost += cost;
+                edgeCount++;
+                
+                if (edgeCount == n - 1) {
+                    break; // All points are connected
+                }
+            }
+        }
+        
+        return minCost;
+    }
+}
+
+https://leetcode.com/problems/network-delay-time/
+import java.util.*;
+
+class Solution {
+    class Node implements Comparable<Node> {
+        int id;
+        int distance;
+        
+        Node(int id, int distance) {
+            this.id = id;
+            this.distance = distance;
+        }
+        
+        public int compareTo(Node other) {
+            return this.distance - other.distance;
+        }
+    }
+    
+    public int networkDelayTime(int[][] times, int n, int k) {
+        // Build the adjacency list
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int[] time : times) {
+            int source = time[0];
+            int destination = time[1];
+            int cost = time[2];
+            
+            if (!graph.containsKey(source)) {
+                graph.put(source, new ArrayList<>());
+            }
+            
+            graph.get(source).add(new int[]{destination, cost});
+        }
+        
+        // Initialize the distance array
+        int[] distance = new int[n + 1];
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        distance[k] = 0;
+        
+        // Create a priority queue for the nodes to visit
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        pq.offer(new Node(k, 0));
+        
+        // Create a visited array to track visited nodes
+        boolean[] visited = new boolean[n + 1];
+        
+        while (!pq.isEmpty()) {
+            Node currentNode = pq.poll();
+            int currentId = currentNode.id;
+            int currentDistance = currentNode.distance;
+            
+            if (visited[currentId]) {
+                continue;
+            }
+            
+            visited[currentId] = true;
+            
+            if (graph.containsKey(currentId)) {
+                for (int[] neighbor : graph.get(currentId)) {
+                    int neighborId = neighbor[0];
+                    int neighborDistance = neighbor[1];
+                    
+                    if (currentDistance + neighborDistance < distance[neighborId]) {
+                        distance[neighborId] = currentDistance + neighborDistance;
+                        pq.offer(new Node(neighborId, distance[neighborId]));
+                    }
+                }
+            }
+        }
+        
+        int maxDelay = 0;
+        for (int i = 1; i <= n; i++) {
+            if (distance[i] == Integer.MAX_VALUE) {
+                return -1; // Some nodes are unreachable
+            }
+            maxDelay = Math.max(maxDelay, distance[i]);
+        }
+        
+        return maxDelay;
+    }
+}
+
+https://leetcode.com/problems/swim-in-rising-water/
+class Solution {
+    public int swimInWater(int[][] grid) {
+        int n = grid.length;
+        int left = 0;
+        int right = n * n - 1;
+        
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            
+            if (isPathPossible(grid, mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        
+        return left;
+    }
+    
+    private boolean isPathPossible(int[][] grid, int threshold) {
+        int n = grid.length;
+        boolean[][] visited = new boolean[n][n];
+        return dfs(grid, 0, 0, threshold, visited);
+    }
+    
+    private boolean dfs(int[][] grid, int row, int col, int threshold, boolean[][] visited) {
+        int n = grid.length;
+        
+        if (row < 0 || row >= n || col < 0 || col >= n || visited[row][col] || grid[row][col] > threshold) {
+            return false;
+        }
+        
+        visited[row][col] = true;
+        
+        if (row == n - 1 && col == n - 1) {
+            return true;
+        }
+        
+        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        
+        for (int[] dir : directions) {
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+            
+            if (dfs(grid, newRow, newCol, threshold, visited)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+}
+
+https://leetcode.com/problems/alien-dictionary/
+
+import java.util.*;
+
+class Solution {
+    public String alienOrder(String[] words) {
+        Map<Character, Set<Character>> graph = new HashMap<>();
+        Map<Character, Integer> inDegree = new HashMap<>();
+        
+        // Initialize in-degree map
+        for (String word : words) {
+            for (char c : word.toCharArray()) {
+                inDegree.put(c, 0);
+            }
+        }
+        
+        // Build the graph and in-degree map
+        for (int i = 0; i < words.length - 1; i++) {
+            String currentWord = words[i];
+            String nextWord = words[i + 1];
+            int minLength = Math.min(currentWord.length(), nextWord.length());
+            
+            for (int j = 0; j < minLength; j++) {
+                char currentChar = currentWord.charAt(j);
+                char nextChar = nextWord.charAt(j);
+                
+                if (currentChar != nextChar) {
+                    Set<Character> neighbors = graph.getOrDefault(currentChar, new HashSet<>());
+                    
+                    if (!neighbors.contains(nextChar)) {
+                        neighbors.add(nextChar);
+                        graph.put(currentChar, neighbors);
+                        inDegree.put(nextChar, inDegree.getOrDefault(nextChar, 0) + 1);
+                    }
+                    
+                    break;
+                }
+            }
+        }
+        
+        // Perform topological sorting
+        StringBuilder sb = new StringBuilder();
+        Queue<Character> queue = new LinkedList<>();
+        
+        for (char c : inDegree.keySet()) {
+            if (inDegree.get(c) == 0) {
+                queue.offer(c);
+            }
+        }
+        
+        while (!queue.isEmpty()) {
+            char current = queue.poll();
+            sb.append(current);
+            
+            if (graph.containsKey(current)) {
+                for (char neighbor : graph.get(current)) {
+                    inDegree.put(neighbor, inDegree.get(neighbor) - 1);
+                    
+                    if (inDegree.get(neighbor) == 0) {
+                        queue.offer(neighbor);
+                    }
+                }
+            }
+        }
+        
+        // Check if there is a cycle in the graph
+        if (sb.length() != inDegree.size()) {
+            return "";
+        }
+        
+        return sb.toString();
+    }
+}
+

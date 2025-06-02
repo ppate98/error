@@ -1,0 +1,359 @@
+https://leetcode.com/problems/best-time-to-buy-and-sell-stock/description/ o(n)/o(1)
+Input: prices = [7,1,5,3,6,4]
+Output: 5
+Explanation: Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5.
+Note that buying on day 2 and selling on day 1 is not allowed because you must buy before you sell.
+
+public int maxProfit(int[] prices) {
+        int minPrice = Integer.MAX_VALUE;
+        int maxProfit = 0;
+
+        for (int i = 0; i < prices.length; i++) {
+            if (prices[i] < minPrice) {
+                minPrice = prices[i];
+            } else if (prices[i] - minPrice > maxProfit) {
+                maxProfit = prices[i] - minPrice;
+            }
+        }
+
+        return maxProfit;
+    }
+	
+https://leetcode.com/problems/longest-substring-without-repeating-characters/
+
+Input: s = "abcabcbb"
+Output: 3
+Explanation: The answer is "abc", with the length of 3.
+
+public class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int maxLength = 0;
+        int left = 0;
+        int right = 0;
+        Set<Character> set = new HashSet<>();
+
+        while (right < s.length()) {
+            char currentChar = s.charAt(right);
+            if (set.contains(currentChar)) {
+                set.remove(s.charAt(left));
+                left++;
+            } else {
+                set.add(currentChar);
+                maxLength = Math.max(maxLength, right - left + 1);
+                right++;
+            }
+        }
+
+        return maxLength;
+    }
+}
+Explanation:
+
+We initialize maxLength variable to keep track of the maximum length of the substring without repeating characters encountered so far.
+We initialize left and right pointers to mark the start and end of the current substring window.
+We use a while loop to iterate until right reaches the end of the string.
+Inside the loop, we check if the character at right is already present in the set (which stores the characters in the current substring window).
+If the character is already present, it means we have a repeating character. In this case, we remove the character at left from the set, move the left pointer to shrink the window.
+If the character is not present, we add it to the set, update maxLength if necessary, and move the right pointer to expand the window.
+After processing all characters, we return the value of maxLength, which represents the length of the longest substring without repeating characters.
+The sliding window technique is used here to efficiently find the longest substring without repeating characters. The window is expanded by moving the right pointer when encountering a new character and is shrunk by moving the left pointer when encountering a repeating character. By keeping track of the maximum length during the process, we obtain the desired result.
+
+
+
+https://leetcode.com/problems/longest-repeating-character-replacement/
+
+Input: s = "AABABBA", k = 1
+Output: 4
+Explanation: Replace the one 'A' in the middle with 'B' and form "AABBBBA".
+The substring "BBBB" has the longest repeating letters, which is 4.
+There may exists other ways to achive this answer too.
+
+
+public class Solution {
+    public int characterReplacement(String s, int k) {
+        int maxLength = 0;
+        int maxCount = 0;
+        int left = 0;
+        int right = 0;
+        int[] charCounts = new int[26];
+
+        while (right < s.length()) {
+            charCounts[s.charAt(right) - 'A']++;
+            maxCount = Math.max(maxCount, charCounts[s.charAt(right) - 'A']);
+
+            if (right - left + 1 - maxCount > k) {
+                charCounts[s.charAt(left) - 'A']--;
+                left++;
+            }
+
+            maxLength = Math.max(maxLength, right - left + 1);
+            right++;
+        }
+
+        return maxLength;
+    }
+}
+Explanation:
+
+We initialize maxLength variable to keep track of the maximum length of the substring with repeating characters that can be replaced encountered so far.
+We initialize maxCount variable to keep track of the maximum count of any single character in the current substring window.
+We initialize left and right pointers to mark the start and end of the current substring window.
+We use an array charCounts of size 26 (assuming all uppercase English letters) to store the count of each character in the current substring window.
+We use a while loop to iterate until right reaches the end of the string.
+Inside the loop, we increment the count of the character at right in the charCounts array and update maxCount if necessary.
+We check if the number of characters in the window that need to be replaced (i.e., right - left + 1 - maxCount) exceeds the allowed replacements k.
+If the number of replacements exceeds k, we decrement the count of the character at left in the charCounts array and move the left pointer to shrink the window.
+We update maxLength with the maximum length of the current substring window.
+We increment the right pointer to expand the window.
+After processing all characters, we return the value of maxLength, which represents the length of the longest substring with repeating characters that can be replaced by k replacements.
+The sliding window technique is used here to efficiently find the longest substring with repeating characters that can be replaced by k replacements. The window is expanded by moving the right pointer when encountering a new character, and it is shrunk by moving the left pointer when the number of replacements exceeds k. By keeping track of the maximum length during the process, we obtain the desired result.
+
+
+
+
+
+
+Regenerate response
+
+
+https://leetcode.com/problems/permutation-in-string/
+Input: s1 = "ab", s2 = "eidbaooo"
+Output: true
+Explanation: s2 contains one permutation of s1 ("ba").
+
+public class Solution {
+    public boolean checkInclusion(String s1, String s2) {
+        int[] s1Freq = new int[26];
+        int[] s2Freq = new int[26];
+
+        for (char c : s1.toCharArray()) {
+            s1Freq[c - 'a']++;
+        }
+
+        int left = 0;
+        int right = 0;
+        int count = 0;
+
+        while (right < s2.length()) {
+            char currentChar = s2.charAt(right);
+            s2Freq[currentChar - 'a']++;
+            count++;
+
+            while (s2Freq[currentChar - 'a'] > s1Freq[currentChar - 'a']) {
+                char leftChar = s2.charAt(left);
+                s2Freq[leftChar - 'a']--;
+                count--;
+                left++;
+            }
+
+            if (count == s1.length()) {
+                return true;
+            }
+
+            right++;
+        }
+
+        return false;
+    }
+}
+Explanation:
+
+We create two arrays, s1Freq and s2Freq, of size 26 to store the frequency of characters in strings s1 and s2 respectively.
+We iterate over the characters in s1 and update the frequency count in the s1Freq array.
+We initialize left and right pointers to mark the start and end of the current window in s2.
+We initialize count variable to keep track of the number of characters in s2 that match the characters in s1.
+We use a while loop to iterate until right reaches the end of s2.
+Inside the loop, we increment the frequency count of the character at right in the s2Freq array and increment count.
+We enter a nested while loop if the frequency count of the character at right in s2Freq is greater than the frequency count in s1Freq. This means that the current window contains more of the character than required.
+
+Inside the nested loop, we decrement the frequency count of the character at left in s2Freq, decrement count, and move the left pointer to shrink the window.
+If count is equal to the length of s1, it means we have found a permutation of s1 in s2, so we return true.
+We increment the right pointer to expand the window.
+If we reach the end of the loop without finding a permutation, we return false.
+The sliding window technique is used here to efficiently check if any permutation of s1 exists in s2. By maintaining two frequency arrays and adjusting the window based on the frequency counts, we can quickly determine if a permutation is present.
+
+https://leetcode.com/problems/minimum-window-substring/
+
+Input: s = "ADOBECODEBANC", t = "ABC"
+Output: "BANC"
+
+Explanation: The minimum window substring "BANC" includes 'A', 'B', and 'C' from string t.
+
+
+
+import java.util.HashMap;
+
+public class MinimumWindowSubstring {
+    public String minWindow(String s, String t) {
+        if (s.length() < t.length() || s.isEmpty() || t.isEmpty()) {
+            return "";
+        }
+
+        // Frequency map for characters in t
+        HashMap<Character, Integer> targetMap = new HashMap<>();
+        for (char c : t.toCharArray()) {
+            targetMap.put(c, targetMap.getOrDefault(c, 0) + 1);
+        }
+
+        // Sliding window pointers
+        int left = 0, right = 0;
+        int minLength = Integer.MAX_VALUE;
+        int minLeft = 0;
+        int count = 0; // To track the number of chars matched
+
+        // Frequency map for current window
+        HashMap<Character, Integer> windowMap = new HashMap<>();
+
+        while (right < s.length()) {
+            char rightChar = s.charAt(right);
+            windowMap.put(rightChar, windowMap.getOrDefault(rightChar, 0) + 1);
+
+            // Increment count if the char is part of t and we haven't exceeded the needed count
+            if (targetMap.containsKey(rightChar) && windowMap.get(rightChar).intValue() <= targetMap.get(rightChar).intValue()) {
+                count++;
+            }
+
+            // Try to shrink the window from the left as much as possible
+            while (count == t.length()) {
+                if (right - left + 1 < minLength) {
+                    minLength = right - left + 1;
+                    minLeft = left;
+                }
+
+                char leftChar = s.charAt(left);
+                windowMap.put(leftChar, windowMap.get(leftChar) - 1);
+
+                if (targetMap.containsKey(leftChar) && windowMap.get(leftChar).intValue() < targetMap.get(leftChar).intValue()) {
+                    count--;
+                }
+
+                left++;
+            }
+
+            right++;
+        }
+
+        return minLength == Integer.MAX_VALUE ? "" : s.substring(minLeft, minLeft + minLength);
+    }
+
+    public static void main(String[] args) {
+        MinimumWindowSubstring solution = new MinimumWindowSubstring();
+        String s = "ADOBECODEBANC";
+        String t = "ABC";
+        System.out.println("Minimum window substring: " + solution.minWindow(s, t));
+    }
+}
+
+
+
+https://leetcode.com/problems/sliding-window-maximum/
+
+
+Input: nums = [1,3,-1,-3,5,3,6,7], k = 3
+Output: [3,3,5,5,6,7]
+Explanation: 
+Window position                Max
+---------------               -----
+[1  3  -1] -3  5  3  6  7       3
+ 1 [3  -1  -3] 5  3  6  7       3
+ 1  3 [-1  -3  5] 3  6  7       5
+ 1  3  -1 [-3  5  3] 6  7       5
+ 1  3  -1  -3 [5  3  6] 7       6
+ 1  3  -1  -3  5 [3  6  7]      7
+ 
+ / Java Program to find the maximum for
+// each and every contiguous subarray of size K.
+import java.util.Deque;
+import java.util.LinkedList;
+ 
+public class SlidingWindow {
+ 
+    // A Dequeue (Double ended queue)
+    // based method for printing
+    // maximum element of
+    // all subarrays of size K
+    static void printMax(int arr[], int N, int K)
+    {
+ 
+        // Create a Double Ended Queue, Qi
+        // that will store indexes of array elements
+        // The queue will store indexes of
+        // useful elements in every window and it will
+        // maintain decreasing order of values
+        // from front to rear in Qi, i.e.,
+        // arr[Qi.front[]] to arr[Qi.rear()]
+        // are sorted in decreasing order
+        Deque<Integer> Qi = new LinkedList<Integer>();
+ 
+        /* Process first k (or first window)
+        elements of array */
+        int i;
+        for (i = 0; i < K; ++i) {
+ 
+            // For every element, the previous
+            // smaller elements are useless so
+            // remove them from Qi
+            while (!Qi.isEmpty()
+                   && arr[i] >= arr[Qi.peekLast()])
+ 
+                // Remove from rear
+                Qi.removeLast();
+ 
+            // Add new element at rear of queue
+            Qi.addLast(i);
+        }
+ 
+        // Process rest of the elements,
+        // i.e., from arr[k] to arr[n-1]
+        for (; i < N; ++i) {
+ 
+            // The element at the front of the
+            // queue is the largest element of
+            // previous window, so print it
+            System.out.print(arr[Qi.peek()] + " ");
+ 
+            // Remove the elements which
+            // are out of this window
+            while ((!Qi.isEmpty()) && Qi.peek() <= i - K)
+                Qi.removeFirst();
+ 
+            // Remove all elements smaller
+            // than the currently
+            // being added element (remove
+            // useless elements)
+            while ((!Qi.isEmpty())
+                   && arr[i] >= arr[Qi.peekLast()])
+                Qi.removeLast();
+ 
+            // Add current element at the rear of Qi
+            Qi.addLast(i);
+        }
+ 
+        // Print the maximum element of last window
+        System.out.print(arr[Qi.peek()]);
+    }
+ 
+    // Driver's code
+    public static void main(String[] args)
+    {
+        int arr[] = { 12, 1, 78, 90, 57, 89, 56 };
+        int K = 3;
+       
+          // Function call
+        printMax(arr, arr.length, K);
+    }
+}
+// This code is contributed by Sumit Ghosh
+Explanation:
+
+We initialize n as the length of the nums array and create an array result to store the maximum elements in each sliding window.
+We create a Deque named deque to store the indices of the elements.
+We iterate over the elements in the nums array using a for loop.
+At each iteration, we first remove any elements that are out of the current window by checking if the index at the front of the deque (deque.peekFirst()) is less than or equal to i - k.
+We use a while loop to remove all such elements, as there can be multiple elements out of the window at the front of the deque.
+Then, we remove any elements from the end of the deque that are smaller than the current element nums[i].
+Again, we use a while loop to remove all such elements, as there can be multiple smaller elements at the end of the deque.
+After removing elements, we add the current index i to the end of the deque using deque.offerLast(i).
+When the window size k is reached (i.e., i >= k - 1), we store the maximum element in the current window at the corresponding index in the result array using result[i - k + 1] = nums[deque.peekFirst()].
+Finally, we return the result array, which contains the maximum elements for each sliding window.
+By using a deque to efficiently track the maximum elements in each sliding window, this solution achieves an optimized time complexity of O(n) for the "Sliding Window Maximum" problem.

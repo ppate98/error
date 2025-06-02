@@ -1,0 +1,1038 @@
+https://leetcode.com/problems/number-of-islands/
+https://leetcode.com/problems/clone-graph/
+https://leetcode.com/problems/max-area-of-island/
+https://leetcode.com/problems/pacific-atlantic-water-flow/
+
+https://leetcode.com/problems/surrounded-regions/
+https://leetcode.com/problems/rotting-oranges/
+https://leetcode.com/problems/walls-and-gates/
+https://leetcode.com/problems/course-schedule/
+https://leetcode.com/problems/course-schedule-ii/
+https://leetcode.com/problems/redundant-connection/
+https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
+
+
+https://leetcode.com/problems/graph-valid-tree/
+https://leetcode.com/problems/word-ladder/
+https://leetcode.com/problems/reconstruct-itinerary/
+https://leetcode.com/problems/cheapest-flights-within-k-stops/
+https://leetcode.com/problems/min-cost-to-connect-all-points/
+https://leetcode.com/problems/network-delay-time/
+https://leetcode.com/problems/swim-in-rising-water/
+https://leetcode.com/problems/alien-dictionary/
+
+
+
+1. Number of Islands (Leetcode Problem 200)
+Problem: Given a 2D grid consisting of '1's (land) and '0's (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically.
+
+Approach: We can solve this problem using Depth First Search (DFS). Start DFS when encountering a '1' (land), marking all connected land cells as '0' (water) to avoid revisiting them. Every time we start a DFS from an unvisited land cell, we increment the island count.
+
+C++ Code:
+
+cpp
+Copy code
+class Solution {
+public:
+    void dfs(vector<vector<char>>& grid, int i, int j) {
+        if (i < 0 || j < 0 || i >= grid.size() || j >= grid[0].size() || grid[i][j] == '0') {
+            return;
+        }
+        grid[i][j] = '0'; // Mark the land as visited
+        dfs(grid, i + 1, j); // Down
+        dfs(grid, i - 1, j); // Up
+        dfs(grid, i, j + 1); // Right
+        dfs(grid, i, j - 1); // Left
+    }
+
+    int numIslands(vector<vector<char>>& grid) {
+        if (grid.empty()) return 0;
+        
+        int count = 0;
+        for (int i = 0; i < grid.size(); i++) {
+            for (int j = 0; j < grid[0].size(); j++) {
+                if (grid[i][j] == '1') {
+                    dfs(grid, i, j); // Perform DFS to mark the island
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+};
+Time Complexity:
+
+DFS traverses every cell once. Thus, the time complexity is 
+O(m×n), where 
+𝑚
+m is the number of rows and 
+𝑛
+n is the number of columns.
+Space Complexity:
+O(m×n) in the worst case due to the recursion stack in DFS.
+2. Clone Graph (Leetcode Problem 133)
+Problem: Given a graph, return a deep copy of it. Each node in the graph contains a value and a list of its neighbors.
+
+Approach: We can use BFS or DFS to clone the graph. The idea is to traverse the graph, and for each node, create a new node with the same value and recursively copy its neighbors.
+
+C++ Code:
+
+cpp
+Copy code
+class Solution {
+public:
+    Node* cloneGraph(Node* node) {
+        if (!node) return nullptr;
+        
+        unordered_map<Node*, Node*> visited;  // To store cloned nodes
+        
+        // DFS function to clone the graph
+        function<Node*(Node*)> dfs = [&](Node* n) {
+            if (visited.count(n)) return visited[n]; // If already cloned, return it
+            visited[n] = new Node(n->val);  // Create a clone of the node
+            for (Node* neighbor : n->neighbors) {
+                visited[n]->neighbors.push_back(dfs(neighbor)); // Recur for neighbors
+            }
+            return visited[n];
+        };
+        
+        return dfs(node);
+    }
+};
+Time Complexity:
+
+Every node and its neighbors are visited once, so the time complexity is 
+O(V+E), where 
+𝑉
+V is the number of vertices (nodes) and 
+𝐸
+E is the number of edges.
+Space Complexity:
+
+O(V) for the visited map and recursion stack in DFS.
+3. Max Area of Island (Leetcode Problem 695)
+Problem: Given a 2D grid with values '1' (land) and '0' (water), find the maximum area of an island in the grid. An island is surrounded by water and consists of all adjacent land cells.
+
+Approach: We can use DFS to calculate the area of each island by marking visited land cells and returning the area for each connected component.
+
+C++ Code:
+
+cpp
+Copy code
+class Solution {
+public:
+    int dfs(vector<vector<int>>& grid, int i, int j) {
+        if (i < 0 || j < 0 || i >= grid.size() || j >= grid[0].size() || grid[i][j] == 0) {
+            return 0;
+        }
+        grid[i][j] = 0; // Mark as visited
+        int area = 1; // Count this cell
+        area += dfs(grid, i + 1, j);
+        area += dfs(grid, i - 1, j);
+        area += dfs(grid, i, j + 1);
+        area += dfs(grid, i, j - 1);
+        return area;
+    }
+
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        int maxArea = 0;
+        for (int i = 0; i < grid.size(); i++) {
+            for (int j = 0; j < grid[0].size(); j++) {
+                if (grid[i][j] == 1) {
+                    maxArea = max(maxArea, dfs(grid, i, j));
+                }
+            }
+        }
+        return maxArea;
+    }
+};
+Time Complexity:
+
+O(m×n), since we visit each cell exactly once.
+Space Complexity:
+O(m×n) due to the recursive DFS stack.
+4. Pacific Atlantic Water Flow (Leetcode Problem 417)
+Problem: Given an m x n matrix of non-negative integers, representing the heights of the land, find the number of cells that can flow to both the Pacific and Atlantic oceans.
+
+Approach: We can use DFS to perform the traversal from the boundaries of the Pacific and Atlantic oceans. We will start DFS from all cells along the Pacific and Atlantic boundaries and mark cells that can reach either ocean. The result will be the intersection of cells reachable by both oceans.
+
+C++ Code:
+
+cpp
+Copy code
+class Solution {
+public:
+    void dfs(vector<vector<int>>& heights, vector<vector<bool>>& visited, int i, int j, int prevHeight) {
+        int m = heights.size(), n = heights[0].size();
+        if (i < 0 || j < 0 || i >= m || j >= n || visited[i][j] || heights[i][j] < prevHeight)
+            return;
+        visited[i][j] = true;
+        dfs(heights, visited, i + 1, j, heights[i][j]);
+        dfs(heights, visited, i - 1, j, heights[i][j]);
+        dfs(heights, visited, i, j + 1, heights[i][j]);
+        dfs(heights, visited, i, j - 1, heights[i][j]);
+    }
+
+    vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {
+        if (heights.empty()) return {};
+        
+        int m = heights.size(), n = heights[0].size();
+        vector<vector<bool>> pacific(m, vector<bool>(n, false)), atlantic(m, vector<bool>(n, false));
+        
+        // Start DFS from Pacific and Atlantic borders
+        for (int i = 0; i < m; i++) {
+            dfs(heights, pacific, i, 0, -1);  // Pacific border (left)
+            dfs(heights, atlantic, i, n - 1, -1);  // Atlantic border (right)
+        }
+        for (int j = 0; j < n; j++) {
+            dfs(heights, pacific, 0, j, -1);  // Pacific border (top)
+            dfs(heights, atlantic, m - 1, j, -1);  // Atlantic border (bottom)
+        }
+        
+        vector<vector<int>> result;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (pacific[i][j] && atlantic[i][j]) {
+                    result.push_back({i, j});
+                }
+            }
+        }
+        return result;
+    }
+};
+Time Complexity:
+O(m×n), where m is the number of rows and n is the number of columns. We perform DFS from all four borders.
+Space Complexity:
+O(m×n) for the visited matrices.
+I'll proceed with the next set of problems in the following part.
+
+
+
+
+
+
+You said:
+same for these
+https://leetcode.com/problems/surrounded-regions/
+https://leetcode.com/problems/rotting-oranges/
+https://leetcode.com/problems/walls-and-gates/
+https://leetcode.com/problems/course-schedule/
+https://leetcode.com/problems/course-schedule-ii/
+https://leetcode.com/problems/redundant-connection/
+https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
+ChatGPT said:
+ChatGPT
+Let's continue with the solutions for the next set of problems.
+
+5. Surrounded Regions (Leetcode Problem 130)
+Problem: Given an m x n board containing 'X' and 'O', capture all regions surrounded by 'X'. A region is captured if it is completely surrounded by 'X' (i.e., it does not touch the border).
+
+Approach: We can use DFS or BFS to mark 'O's that are connected to the borders (which cannot be surrounded) and then flip the remaining 'O's to 'X's.
+
+First, traverse all border cells and mark connected 'O's as safe (not surrounded).
+Then, traverse the inner grid and change all unmarked 'O's to 'X's, since they are surrounded.
+Finally, change the marked 'O's back to 'O'.
+C++ Code:
+
+cpp
+Copy code
+class Solution {
+public:
+    void dfs(vector<vector<char>>& board, int i, int j) {
+        if (i < 0 || j < 0 || i >= board.size() || j >= board[0].size() || board[i][j] != 'O') {
+            return;
+        }
+        board[i][j] = 'S'; // Mark 'O' as safe (not surrounded)
+        dfs(board, i + 1, j);
+        dfs(board, i - 1, j);
+        dfs(board, i, j + 1);
+        dfs(board, i, j - 1);
+    }
+
+    void solve(vector<vector<char>>& board) {
+        if (board.empty()) return;
+        int m = board.size(), n = board[0].size();
+        
+        // Mark all 'O's connected to borders
+        for (int i = 0; i < m; i++) {
+            dfs(board, i, 0); // Left border
+            dfs(board, i, n - 1); // Right border
+        }
+        for (int j = 0; j < n; j++) {
+            dfs(board, 0, j); // Top border
+            dfs(board, m - 1, j); // Bottom border
+        }
+
+        // Flip all unmarked 'O's to 'X' and 'S' back to 'O'
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == 'O') {
+                    board[i][j] = 'X'; // Surrounded 'O' to 'X'
+                } else if (board[i][j] == 'S') {
+                    board[i][j] = 'O'; // Safe 'O' back to 'O'
+                }
+            }
+        }
+    }
+};
+Time Complexity:
+O(m×n), where 
+𝑚
+m is the number of rows and 
+𝑛
+n is the number of columns. We visit each cell once.
+Space Complexity:
+O(m×n) due to the recursion stack in DFS.
+6. Rotting Oranges (Leetcode Problem 994)
+Problem: Given a grid of size m x n representing a box of oranges, where:
+
+'1' represents a fresh orange,
+'0' represents an empty cell,
+'-1' represents a rotten orange,
+We need to determine the minimum time it takes for all fresh oranges to rot. If it is impossible, return -1.
+
+Approach: We can use Breadth-First Search (BFS) to propagate the rot. Start from all rotten oranges (multi-source BFS), and for each level of BFS, rot the fresh oranges that are adjacent to rotten ones.
+
+C++ Code:
+
+cpp
+Copy code
+class Solution {
+public:
+    int orangesRotting(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+        queue<pair<int, int>> q;
+        int freshOranges = 0;
+        
+        // Initialize the queue with all rotten oranges and count fresh oranges
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 2) {
+                    q.push({i, j});
+                } else if (grid[i][j] == 1) {
+                    freshOranges++;
+                }
+            }
+        }
+
+        // If no fresh oranges, return 0
+        if (freshOranges == 0) return 0;
+        
+        int directions[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        int minutes = 0;
+        
+        // Perform multi-source BFS
+        while (!q.empty() && freshOranges > 0) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                auto [x, y] = q.front();
+                q.pop();
+                
+                // Explore all 4 directions
+                for (auto& dir : directions) {
+                    int nx = x + dir[0], ny = y + dir[1];
+                    if (nx >= 0 && ny >= 0 && nx < m && ny < n && grid[nx][ny] == 1) {
+                        grid[nx][ny] = 2; // Rot the fresh orange
+                        freshOranges--;
+                        q.push({nx, ny});
+                    }
+                }
+            }
+            minutes++; // Increase time after each level of BFS
+        }
+
+        // If all fresh oranges rotted, return minutes, otherwise -1
+        return freshOranges == 0 ? minutes : -1;
+    }
+};
+Time Complexity:
+O(m×n) because we visit each cell once during BFS.
+Space Complexity:
+O(m×n) due to the queue used for BFS.
+7. Walls and Gates (Leetcode Problem 286)
+Problem: You are given a 2D grid with some gates (represented as 0), empty rooms (represented as INF), and walls (represented as -1). The goal is to fill each empty room with the distance to its nearest gate.
+
+Approach: We can use Breadth-First Search (BFS) starting from all the gates. This way, we can propagate the distance to all empty rooms.
+
+C++ Code:
+
+cpp
+Copy code
+class Solution {
+public:
+    void wallsAndGates(vector<vector<int>>& rooms) {
+        int m = rooms.size(), n = rooms[0].size();
+        queue<pair<int, int>> q;
+        int directions[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        
+        // Add all gates to the queue
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (rooms[i][j] == 0) {
+                    q.push({i, j});
+                }
+            }
+        }
+        
+        // BFS to update the distance to the nearest gate
+        while (!q.empty()) {
+            auto [x, y] = q.front();
+            q.pop();
+            
+            for (auto& dir : directions) {
+                int nx = x + dir[0], ny = y + dir[1];
+                if (nx >= 0 && ny >= 0 && nx < m && ny < n && rooms[nx][ny] == INT_MAX) {
+                    rooms[nx][ny] = rooms[x][y] + 1;
+                    q.push({nx, ny});
+                }
+            }
+        }
+    }
+};
+Time Complexity:
+O(m×n) since every cell is processed once.
+Space Complexity:
+O(m×n) for the queue used in BFS.
+8. Course Schedule (Leetcode Problem 207)
+Problem: You are given a number of courses and a list of prerequisite pairs. Determine if it is possible to finish all courses.
+
+Approach: This problem can be modeled as a Topological Sort problem. We can use Kahn’s Algorithm (BFS) or DFS with cycle detection. If there’s a cycle in the graph, it's impossible to finish all courses.
+
+C++ Code (BFS - Kahn's Algorithm):
+
+cpp
+Copy code
+class Solution {
+public:
+    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+        vector<int> indegree(numCourses, 0);
+        vector<vector<int>> graph(numCourses);
+        
+        // Build the graph and compute indegree for each course
+        for (auto& pre : prerequisites) {
+            graph[pre[1]].push_back(pre[0]);
+            indegree[pre[0]]++;
+        }
+        
+        queue<int> q;
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) {
+                q.push(i); // Add courses with no prerequisites
+            }
+        }
+
+        int count = 0;
+        while (!q.empty()) {
+            int course = q.front();
+            q.pop();
+            count++;
+            
+            // Decrease indegree for all neighbors
+            for (int neighbor : graph[course]) {
+                if (--indegree[neighbor] == 0) {
+                    q.push(neighbor);
+                }
+            }
+        }
+
+        return count == numCourses; // If all courses are processed, return true
+    }
+};
+Time Complexity:
+O(V+E), where 
+𝑉
+V is the number of vertices (courses) and 
+𝐸
+E is the number of edges (prerequisite pairs).
+Space Complexity:
+O(V+E), for storing the graph and indegree array.
+9. Course Schedule II (Leetcode Problem 210)
+Problem: Return the ordering of courses you should take to finish all courses given the prerequisite pairs.
+
+Approach: Similar to Course Schedule I, but instead of just checking for a cycle, we also need to return the valid topological order.
+
+C++ Code (BFS - Kahn's Algorithm):
+
+cpp
+Copy code
+class Solution {
+public:
+    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
+        vector<int> indegree(numCourses, 0), result;
+        vector<vector<int>> graph(numCourses);
+        
+        for (auto& pre : prerequisites) {
+            graph[pre[1]].push_back(pre[0]);
+            indegree[pre[0]]++;
+        }
+        
+        queue<int> q;
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) {
+                q.push(i);
+            }
+        }
+
+        while (!q.empty()) {
+            int course = q.front();
+            q.pop();
+            result.push_back(course);
+            
+            for (int neighbor : graph[course]) {
+                if (--indegree[neighbor] == 0) {
+                    q.push(neighbor);
+                }
+            }
+        }
+
+        return result.size() == numCourses ? result : vector<int>(); // Return empty if no valid order
+    }
+};
+Time Complexity:
+O(V+E) where 
+𝑉
+V is the number of courses and 
+𝐸
+E is the number of prerequisite pairs.
+Space Complexity:
+O(V+E) for the graph and indegree array.
+I'll continue with the next set of problems in the following part.
+
+
+
+
+
+
+You said:
+https://leetcode.com/problems/redundant-connection/
+https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
+ChatGPT said:
+ChatGPT
+Let's continue with solutions for the next two problems.
+
+10. Redundant Connection (Leetcode Problem 684)
+Problem:
+Given a directed graph with 
+𝑛
+n nodes labeled from 1 to 
+𝑛
+n and an array edges, where each edge is represented as a pair 
+[u,v], find the edge that forms a cycle and remove it to make the graph acyclic.
+
+Approach:
+This problem is a classic Cycle Detection problem in an undirected graph, which can be solved using Union-Find (Disjoint Set Union). The approach is:
+
+For each edge 
+[u,v], try to "union" the two nodes. If they are already connected, that means the edge forms a cycle.
+Otherwise, union the nodes.
+C++ Code:
+
+cpp
+Copy code
+class Solution {
+public:
+    int find(int x, vector<int>& parent) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x], parent); // Path compression
+        }
+        return parent[x];
+    }
+
+    void unionSets(int x, int y, vector<int>& parent, vector<int>& rank) {
+        int rootX = find(x, parent);
+        int rootY = find(y, parent);
+
+        if (rootX != rootY) {
+            // Union by rank
+            if (rank[rootX] > rank[rootY]) {
+                parent[rootY] = rootX;
+            } else if (rank[rootX] < rank[rootY]) {
+                parent[rootX] = rootY;
+            } else {
+                parent[rootY] = rootX;
+                rank[rootX]++;
+            }
+        }
+    }
+
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+        int n = edges.size();
+        vector<int> parent(n + 1), rank(n + 1, 0);
+        
+        // Initialize each node to be its own parent
+        for (int i = 1; i <= n; i++) {
+            parent[i] = i;
+        }
+
+        for (auto& edge : edges) {
+            int u = edge[0], v = edge[1];
+            if (find(u, parent) == find(v, parent)) {
+                return edge; // If u and v are already connected, this edge is redundant
+            }
+            unionSets(u, v, parent, rank); // Union u and v
+        }
+
+        return {}; // If no redundant connection is found
+    }
+};
+Time Complexity:
+
+The find and union operations are almost constant time due to path compression and union by rank, so the overall time complexity is 
+O(E⋅α(n)), where 
+𝐸
+E is the number of edges and 
+α(n) is the inverse Ackermann function, which is very slow-growing and effectively constant for practical purposes.
+Space Complexity:
+O(n), for the parent and rank arrays.
+11. Number of Connected Components in an Undirected Graph (Leetcode Problem 323)
+Problem:
+You are given an undirected graph with n nodes labeled from 0 to 
+𝑛
+−
+1
+n−1 and a list of edges. You need to find the number of connected components in the graph. A connected component is a set of nodes such that each node is reachable from any other node in that set.
+
+Approach:
+We can solve this problem using Depth-First Search (DFS) or Breadth-First Search (BFS) to traverse the graph. Each DFS/BFS call from an unvisited node corresponds to one connected component.
+
+Alternatively, we can use Union-Find (Disjoint Set Union) to merge nodes into connected components.
+
+C++ Code (DFS approach):
+
+cpp
+Copy code
+class Solution {
+public:
+    void dfs(int node, vector<vector<int>>& graph, vector<bool>& visited) {
+        visited[node] = true;
+        for (int neighbor : graph[node]) {
+            if (!visited[neighbor]) {
+                dfs(neighbor, graph, visited);
+            }
+        }
+    }
+
+    int countComponents(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> graph(n);
+        vector<bool> visited(n, false);
+        int components = 0;
+        
+        // Build the graph
+        for (auto& edge : edges) {
+            int u = edge[0], v = edge[1];
+            graph[u].push_back(v);
+            graph[v].push_back(u);  // Undirected graph
+        }
+        
+        // Perform DFS to find connected components
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) {
+                dfs(i, graph, visited);
+                components++;  // A new component is found
+            }
+        }
+
+        return components;
+    }
+};
+Time Complexity:
+
+The time complexity is 
+
+O(V+E), where 
+𝑉
+V is the number of vertices (nodes) and 
+𝐸
+E is the number of edges. This is because we visit each node and edge once.
+Space Complexity:
+
+O(V+E), for the graph and the visited array.
+C++ Code (Union-Find approach):
+
+cpp
+Copy code
+class Solution {
+public:
+    int find(int x, vector<int>& parent) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x], parent);  // Path compression
+        }
+        return parent[x];
+    }
+
+    void unionSets(int x, int y, vector<int>& parent, vector<int>& rank) {
+        int rootX = find(x, parent);
+        int rootY = find(y, parent);
+        
+        if (rootX != rootY) {
+            if (rank[rootX] > rank[rootY]) {
+                parent[rootY] = rootX;
+            } else if (rank[rootX] < rank[rootY]) {
+                parent[rootX] = rootY;
+            } else {
+                parent[rootY] = rootX;
+                rank[rootX]++;
+            }
+        }
+    }
+
+    int countComponents(int n, vector<vector<int>>& edges) {
+        vector<int> parent(n), rank(n, 0);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;  // Initialize each node to be its own parent
+        }
+        
+        // Union the nodes based on edges
+        for (auto& edge : edges) {
+            unionSets(edge[0], edge[1], parent, rank);
+        }
+        
+        // Count the number of unique components
+        int components = 0;
+        for (int i = 0; i < n; i++) {
+            if (parent[i] == i) {
+                components++;  // A new root represents a new component
+            }
+        }
+
+        return components;
+    }
+};
+Time Complexity:
+
+The time complexity is 
+O(E⋅α(n)), where 
+𝐸
+E is the number of edges and 
+α(n) is the inverse Ackermann function, which is very slow-growing and essentially constant for practical values of 
+𝑛
+n.
+Space Complexity:
+O(V+E), for the parent and rank arrays.
+Summary of Time and Space Complexities
+Redundant Connection:
+
+Time Complexity: 
+O(E⋅α(n))
+Space Complexity: 
+O(n)
+Number of Connected Components in an Undirected Graph (DFS approach):
+
+Time Complexity: 
+O(V+E)
+Space Complexity: 
+O(V+E)
+Union-Find approach:
+
+Time Complexity: 
+O(E⋅α(n))
+Space Complexity: 
+O(V)
+These are efficient solutions using DFS or Union-Find (Disjoint Set Union), both of which are commonly used techniques for graph traversal and connected component detection.
+
+
+
+
+
+
+You said:
+for these 
+https://leetcode.com/problems/graph-valid-tree/
+https://leetcode.com/problems/word-ladder/
+https://leetcode.com/problems/reconstruct-itinerary/
+https://leetcode.com/problems/cheapest-flights-within-k-stops/
+https://leetcode.com/problems/min-cost-to-connect-all-points/
+https://leetcode.com/problems/network-delay-time/
+https://leetcode.com/problems/swim-in-rising-water/
+https://leetcode.com/problems/alien-dictionary/
+ChatGPT said:
+ChatGPT
+Here are the optimized C++ solutions and explanations for the next set of problems:
+
+12. Graph Valid Tree (Leetcode Problem 261)
+Problem:
+Given a graph with n nodes and a list of edges, check if it forms a valid tree. A valid tree means that:
+
+The graph is connected.
+The graph has no cycles.
+Approach:
+We can solve this problem using Union-Find (Disjoint Set Union) to detect cycles and ensure the graph is connected. A valid tree must have exactly n-1 edges, and all nodes must be connected.
+
+C++ Code (Union-Find Approach):
+
+cpp
+Copy code
+class Solution {
+public:
+    int find(int x, vector<int>& parent) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x], parent); // Path compression
+        }
+        return parent[x];
+    }
+
+    void unionSets(int x, int y, vector<int>& parent, vector<int>& rank) {
+        int rootX = find(x, parent);
+        int rootY = find(y, parent);
+        
+        if (rootX != rootY) {
+            // Union by rank
+            if (rank[rootX] > rank[rootY]) {
+                parent[rootY] = rootX;
+            } else if (rank[rootX] < rank[rootY]) {
+                parent[rootX] = rootY;
+            } else {
+                parent[rootY] = rootX;
+                rank[rootX]++;
+            }
+        }
+    }
+
+    bool validTree(int n, vector<vector<int>>& edges) {
+        if (edges.size() != n - 1) return false; // A tree must have exactly n-1 edges
+
+        vector<int> parent(n), rank(n, 0);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i; // Initialize each node to be its own parent
+        }
+
+        for (auto& edge : edges) {
+            int u = edge[0], v = edge[1];
+            if (find(u, parent) == find(v, parent)) return false; // Cycle detected
+            unionSets(u, v, parent, rank);
+        }
+        return true;
+    }
+};
+Time Complexity:
+O(E⋅α(n)), where 
+𝐸
+E is the number of edges and 
+α(n) is the inverse Ackermann function.
+Space Complexity:
+O(n), for the parent and rank arrays.
+13. Word Ladder (Leetcode Problem 127)
+Problem:
+Given two words, beginWord and endWord, and a dictionary of words, find the length of the shortest transformation sequence from beginWord to endWord. Each transformation must change exactly one letter, and the new word must be in the dictionary.
+
+Approach:
+We can use Breadth-First Search (BFS) to explore all possible transformations level by level. This ensures we find the shortest path from beginWord to endWord.
+
+C++ Code:
+
+cpp
+Copy code
+class Solution {
+public:
+    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+        unordered_set<string> dict(wordList.begin(), wordList.end());
+        if (dict.find(endWord) == dict.end()) return 0; // endWord not in dictionary
+        
+        queue<string> q;
+        q.push(beginWord);
+        int level = 1;
+        
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                string word = q.front();
+                q.pop();
+                
+                for (int j = 0; j < word.size(); j++) {
+                    char original = word[j];
+                    for (char c = 'a'; c <= 'z'; c++) {
+                        word[j] = c;
+                        if (word == endWord) return level + 1;
+                        if (dict.find(word) != dict.end()) {
+                            dict.erase(word); // Remove to prevent revisiting
+                            q.push(word);
+                        }
+                    }
+                    word[j] = original; // Restore the original character
+                }
+            }
+            level++;
+        }
+        return 0;
+    }
+};
+Time Complexity:
+O(N⋅M⋅26), where 
+𝑁
+N is the number of words and 
+𝑀
+M is the length of each word (since we check each letter of each word).
+Space Complexity:
+O(N), for the queue and dictionary.
+14. Reconstruct Itinerary (Leetcode Problem 332)
+Problem:
+Given a list of airline tickets represented by pairs of departure and arrival airports, reconstruct the itinerary in order. The itinerary must begin at "JFK" and must be reconstructed in the lexicographical order of airports.
+
+Approach:
+We can use DFS with backtracking to find the lexicographically smallest itinerary. We use a priority queue to always process the smallest airport first, ensuring the lexicographical order.
+
+C++ Code:
+
+cpp
+Copy code
+class Solution {
+public:
+    void dfs(string airport, unordered_map<string, priority_queue<string>>& graph, vector<string>& result) {
+        while (!graph[airport].empty()) {
+            string nextAirport = graph[airport].top();
+            graph[airport].pop();
+            dfs(nextAirport, graph, result);
+        }
+        result.push_back(airport);
+    }
+
+    vector<string> findItinerary(vector<vector<string>>& tickets) {
+        unordered_map<string, priority_queue<string>> graph;
+        vector<string> result;
+
+        // Build the graph (adjacency list)
+        for (auto& ticket : tickets) {
+            graph[ticket[0]].push(ticket[1]);
+        }
+
+        dfs("JFK", graph, result);
+        reverse(result.begin(), result.end());
+        return result;
+    }
+};
+Time Complexity:
+O(E⋅logE), where 
+𝐸
+E is the number of edges (tickets) since we push/pop from a priority queue.
+Space Complexity:
+O(E), for the graph and recursion stack.
+15. Cheapest Flights Within K Stops (Leetcode Problem 787)
+Problem:
+Given a graph with n nodes and edges with weights, and a source node and destination node, find the cheapest price from source to destination with at most k stops.
+
+Approach:
+This is a Shortest Path problem where we can use Breadth-First Search (BFS) with a queue. We track the current price and the number of stops in a 3-tuple (city, price, stops). We update the price for each destination while ensuring we do not exceed k stops.
+
+C++ Code:
+
+cpp
+Copy code
+class Solution {
+public:
+    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) {
+        vector<vector<int>> graph(n);
+        for (auto& flight : flights) {
+            graph[flight[0]].push_back(flight[1], flight[2]);
+        }
+        
+        queue<tuple<int, int, int>> q; // (node, cost, stops)
+        q.push({src, 0, 0});
+        
+        vector<int> cost(n, INT_MAX); 
+        cost[src] = 0;
+        
+        while (!q.empty()) {
+            auto [node, c, s] = q.front(); q.pop();
+            if (s > k) continue;
+            
+            for (auto [neighbor, price] : graph[node]) {
+                int new_cost = c + price;
+                if (new_cost < cost[neighbor] && s + 1 <= k) {
+                    cost[neighbor] = new_cost;
+                    q.push({neighbor, new_cost, s + 1});
+                }
+            }
+        }
+        return cost[dst] == INT_MAX ? -1 : cost[dst];
+    }
+};
+Time Complexity:
+O(E⋅k), where 
+𝐸
+E is the number of edges and 
+𝑘
+k is the maximum number of stops.
+Space Complexity:
+O(n), for the queue and cost array.
+16. Min Cost to Connect All Points (Leetcode Problem 1584)
+Problem:
+Given n points in a 2D plane, find the minimum cost to connect all the points. Each point can be connected to another by an edge, and the cost of an edge is the Manhattan distance between the two points.
+
+Approach:
+We can solve this problem using Prim's Algorithm or Kruskal's Algorithm (since it’s a Minimum Spanning Tree problem). We will use Prim's Algorithm here, where we start with one point and repeatedly add the nearest point to the tree.
+
+C++ Code:
+
+cpp
+Copy code
+class Solution {
+public:
+    int minCostConnectPoints(vector<vector<int>>& points) {
+        int n = points.size();
+        vector<bool> visited(n, false);
+        vector<int> minCost(n, INT_MAX);
+        minCost[0] = 0; // Start from the first point
+        int totalCost = 0;
+
+        for (int i = 0; i < n; i++) {
+            int u = -1, cost = INT_MAX;
+            for (int j = 0; j < n; j++) {
+                if (!visited[j] && minCost[j] < cost) {
+                    u = j;
+                    cost = minCost[j];
+                }
+            }
+            visited[u] = true;
+            totalCost += cost;
+
+            for (int v = 0; v < n; v++) {
+                if (!visited[v]) {
+                    int dist = abs(points[u][0] - points[v][0]) + abs(points[u][1] - points[v][1]);
+                    minCost[v] = min(minCost[v], dist);
+                }
+            }
+        }
+        return totalCost;
+    }
+};
+Time Complexity:
+O(n 
+2
+ ), as we scan all nodes in each iteration to find the minimum cost.
+Space Complexity:
+O(n), for the visited and minCost arrays.
+Summary of Time and Space Complexities
+Graph Valid Tree:
+
+Time Complexity: 
+O(E⋅α(n))
+Space Complexity: 
+
+O(n)
+Word Ladder:
+
+Time Complexity: 
+O(N⋅M⋅26)
+Space Complexity: 
+O(N)
+Reconstruct Itinerary:
+
+Time Complexity: 
+O(E⋅logE)
+Space Complexity: 
+O(E)
+Cheapest Flights Within K Stops:
+
+Time Complexity: 
+O(E⋅k)
+Space Complexity: 
+O(n)
+Min Cost to Connect All Points:
+
+Time Complexity: 
+O(n 
+2
+ )
+Space Complexity: 
+O(n)
+These solutions leverage efficient graph traversal techniques like BFS, DFS, and Prim’s algorithm to solve each problem optimally.

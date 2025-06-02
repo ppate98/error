@@ -1,0 +1,158 @@
+PrierityQueue/heap
+https://leetcode.com/problems/kth-largest-element-in-an-array/
+
+import java.util.*;
+
+public class Solution {
+    public int findKthLargest(int[] nums, int k) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+        for (int num : nums) {
+            pq.offer(num);
+
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+
+        return pq.peek();
+    }
+}
+Explanation:
+
+We define the findKthLargest method that takes an array nums and an integer k as parameters and returns the Kth largest element in the array.
+We create a PriorityQueue named pq to store the elements in ascending order. Since we want the Kth largest element, we use a min heap.
+We iterate over the elements in the nums array using a for loop.
+For each element num, we add it to the priority queue using pq.offer(num).
+If the size of the priority queue becomes greater than k, we remove the smallest element (the root of the min heap) using pq.poll().
+This ensures that the priority queue always contains the K largest elements.
+After iterating over all the elements
+
+
+
+
+https://leetcode.com/problems/kth-largest-element-in-a-stream/
+
+import java.util.*;
+
+class KthLargest {
+    private PriorityQueue<Integer> pq;
+    private int k;
+
+    public KthLargest(int k, int[] nums) {
+        this.k = k;
+        this.pq = new PriorityQueue<>(k);
+
+        for (int num : nums) {
+            add(num);
+        }
+    }
+
+    public int add(int val) {
+        if (pq.size() < k) {
+            pq.offer(val);
+        } else if (val > pq.peek()) {
+            pq.poll();
+            pq.offer(val);
+        }
+
+        return pq.peek();
+    }
+}
+
+
+https://leetcode.com/problems/find-median-from-data-stream/
+
+
+import java.util.*;
+
+class MedianFinder {
+    private PriorityQueue<Integer> maxHeap; // Stores the smaller half of the numbers
+    private PriorityQueue<Integer> minHeap; // Stores the larger half of the numbers
+
+    public MedianFinder() {
+        maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        minHeap = new PriorityQueue<>();
+    }
+
+    public void addNum(int num) {
+        maxHeap.offer(num); // Add the number to the max heap
+
+        minHeap.offer(maxHeap.poll()); // Move the largest element from the max heap to the min heap
+
+        if (maxHeap.size() < minHeap.size()) {
+            maxHeap.offer(minHeap.poll()); // If the max heap becomes smaller, move the smallest element from the min heap to the max heap
+        }
+    }
+
+    public double findMedian() {
+        if (maxHeap.size() == minHeap.size()) {
+            return (maxHeap.peek() + minHeap.peek()) / 2.0; // If the sizes of both heaps are equal, the median is the average of the top elements
+        } else {
+            return maxHeap.peek(); // If the max heap has more elements, the median is the top element of the max heap
+        }
+    }
+}
+Explanation:
+
+We define a class MedianFinder that has two priority queues: maxHeap and minHeap.
+The maxHeap is a max heap (with the largest element on top) that stores the smaller half of the numbers.
+The minHeap is a min heap (with the smallest element on top) that stores the larger half of the numbers.
+In the constructor of MedianFinder, we initialize both heaps.
+The addNum method takes an integer num as input and adds it to the heaps.
+We add the number num to the maxHeap using maxHeap.offer(num).
+We move the largest element from the maxHeap to the minHeap using minHeap.offer(maxHeap.poll()).
+This ensures that the maxHeap always contains the smaller half of the numbers, and the minHeap always contains the larger half.
+If the size of the maxHeap becomes smaller than the minHeap, we move the smallest element from the minHeap to the maxHeap using maxHeap.offer(minHeap.poll()).
+This ensures that the size difference between the heaps is at most 1.
+The findMedian method returns the median of the numbers seen so far.
+If the sizes of both heaps are equal, the median is the average of the top elements (maxHeap.peek() and minHeap.peek()).
+If the maxHeap has more elements, the median is the top element of the maxHeap.
+By maintaining two heaps, this solution efficiently calculates the median in constant time complexity for both adding a number and finding the median.
+
+
+
+https://leetcode.com/problems/k-closest-points-to-origin/
+
+
+class Solution {
+    public int[][] kClosest(int[][] points, int k) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> distance(b) - distance(a));
+
+        for (int[] point : points) {
+            pq.offer(point);
+
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+
+        int[][] result = new int[k][2];
+        int i = 0;
+
+        while (!pq.isEmpty()) {
+            result[i++] = pq.poll();
+        }
+
+        return result;
+    }
+
+    private int distance(int[] point) {
+        return point[0] * point[0] + point[1] * point[1];
+    }
+}
+Explanation:
+
+We define the kClosest method that takes a 2D array of points points and an integer k as parameters and returns the K closest points to the origin.
+We create a PriorityQueue named pq to store the points in descending order of their distance from the origin.
+The priority queue is sorted based on the distance of each point using a custom comparator.
+The custom comparator compares two points a and b based on their distances, which are calculated using the distance method.
+Since we want the K closest points, we use a min heap by sorting in descending order.
+We iterate over the points in the points array using a for loop.
+For each point point, we add it to the priority queue using pq.offer(point).
+If the size of the priority queue becomes greater than k, we remove the farthest point (the top element) using pq.poll().
+This ensures that the priority queue always contains the K closest points.
+After iterating over all the points, we create a 2D array result to store the K closest points.
+We use a while loop to extract the points from the priority queue and store them in the result array.
+Finally, we return the result array, which contains the K closest points.
+By using a priority queue (min heap) to store the K closest points based on their distances from the origin, this solution efficiently finds the K closest points in the given array.

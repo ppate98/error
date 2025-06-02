@@ -1,0 +1,473 @@
+     
+Array & Hashing=====
+1- https://leetcode.com/problems/contains-duplicate/
+import java.util.HashSet;
+import java.util.Set;
+
+public class Solution {
+    public boolean containsDuplicate(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        
+        for (int num : nums) {
+            if (set.contains(num)) {
+                return true;
+            }
+            set.add(num);
+        }
+        
+        return false;
+    }
+}
+
+
+HashSet allows for constant time (O(1)) average case complexity for insertion and lookup operations, which leads to an efficient solution for this problem.
+
+2 - https://leetcode.com/problems/valid-anagram/ O(n)
+import java.util.HashMap;
+import java.util.Map;
+
+public class Solution {
+    public boolean isAnagram(String s, String t) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+        
+        int[] counter = new int[26];
+        
+        for (int i = 0; i < s.length(); i++) {
+            counter[s.charAt(i) - 'a']++;
+            counter[t.charAt(i) - 'a']--;
+        }
+        
+        for (int count : counter) {
+            if (count != 0) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}
+
+3- https://leetcode.com/problems/two-sum/ 
+
+using a HashMap for constant time (O(1)) average case complexity for insertion and lookup operations, the solution achieves an optimized approach with a time complexity of O(n), 
+
+public class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        Map<Integer, Integer> map = new HashMap<>();
+        
+        for (int i = 0; i < nums.length; i++) {
+            int complement = target - nums[i];
+            if (map.containsKey(complement)) {
+                return new int[]{map.get(complement), i};
+            }
+            map.put(nums[i], i);
+        }
+        
+        throw new IllegalArgumentException("No two sum solution");
+    }
+}
+
+4- https://leetcode.com/problems/group-anagrams/ O(nklogk)
+public class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> map = new HashMap<>();
+        
+        for (String str : strs) {
+            char[] charArray = str.toCharArray();
+            Arrays.sort(charArray);
+            String sortedStr = new String(charArray);
+            
+            if (!map.containsKey(sortedStr)) {
+                map.put(sortedStr, new ArrayList<>());
+            }
+            map.get(sortedStr).add(str);
+        }
+        
+        return new ArrayList<>(map.values());
+    }
+}
+
+Or
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+ 
+public class FindAnagrams {
+ 
+    private static ArrayList<ArrayList<String> >
+    solver(
+        ArrayList<String> list)
+    {
+ 
+        // Inner hashmap counts frequency
+        // of characters in a string.
+        // Outer hashmap for if same
+        // frequency characters are present in
+        // in a string then it will add it to
+        // the arraylist.
+        HashMap<HashMap<Character, Integer>,
+                ArrayList<String> >
+            map = new HashMap<HashMap<Character, Integer>,
+                              ArrayList<String> >();
+        for (String str : list) {
+            HashMap<Character, Integer>
+                tempMap = new HashMap<Character, Integer>();
+ 
+            // Counting the frequency of the
+            // characters present in a string
+            for (int i = 0; i < str.length(); i++) {
+                if (tempMap.containsKey(str.charAt(i))) {
+                    int x = tempMap.get(str.charAt(i));
+                    tempMap.put(str.charAt(i), ++x);
+                }
+                else {
+                    tempMap.put(str.charAt(i), 1);
+                }
+            }
+ 
+            // If the same frequency of characters
+            // are already present then add that
+            // string into that arraylist otherwise
+            // created a new arraylist and add that string
+            if (map.containsKey(tempMap))
+                map.get(tempMap).add(str);
+            else {
+                ArrayList<String>
+                    tempList = new ArrayList<String>();
+                tempList.add(str);
+                map.put(tempMap, tempList);
+            }
+        }
+ 
+        // Stores the result in a arraylist
+        ArrayList<ArrayList<String> >
+            result = new ArrayList<>();
+        for (HashMap<Character, Integer>
+                 temp : map.keySet())
+            result.add(map.get(temp));
+        return result;
+    }
+ 
+    // Drivers Method
+    public static void main(String[] args)
+    {
+        ArrayList<String> list = new ArrayList<>();
+        list.add("cat");
+        list.add("dog");
+        list.add("ogd");
+        list.add("god");
+        list.add("atc");
+ 
+        System.out.println(solver(list));
+    }
+}
+Let there be N-words and each word has maximum M characters, therefore max. storage space for each word with at max. M characters will be O(M), therefore for max N-words, it will be O(N*M). Therefore, the upper bound is O(NM).
+
+
+
+
+
+5- https://leetcode.com/problems/top-k-frequent-elements/ - O(n log k),
+import java.util.*;
+
+public class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> countMap = new HashMap<>();
+        
+        // Count the frequency of each number
+        for (int num : nums) {
+            countMap.put(num, countMap.getOrDefault(num, 0) + 1);
+        }
+        
+        // Use a priority queue (min heap) to keep track of top K frequent elements
+        PriorityQueue<Map.Entry<Integer, Integer>> pq = new PriorityQueue<>((a, b) -> a.getValue() - b.getValue());
+        for (Map.Entry<Integer, Integer> entry : countMap.entrySet()) {
+            pq.offer(entry);
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+        
+        // Retrieve the top K frequent elements from the priority queue
+        int[] result = new int[k];
+        int index = 0;
+        while (!pq.isEmpty()) {
+            result[index++] = pq.poll().getKey();
+        }
+        
+        return result;
+    }
+}
+
+
+https://leetcode.com/problems/product-of-array-except-self/ - o(n)
+Input: nums = [1,2,3,4]
+Output: [24,12,8,6]
+public class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        int n = nums.length;
+        
+        int[] output = new int[n];
+        
+        // Compute the left products
+        int leftProduct = 1;
+        for (int i = 0; i < n; i++) {
+            output[i] = leftProduct;
+            leftProduct *= nums[i];
+        }
+        
+        // Compute the right products and multiply with the left products
+        int rightProduct = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            output[i] *= rightProduct;
+            rightProduct *= nums[i];
+        }
+        
+        return output;
+    }
+}
+
+https://leetcode.com/problems/valid-sudoku/ -
+
+
+
+public class Solution {
+    public boolean isValidSudoku(char[][] board) {
+        boolean[][] rows = new boolean[9][9];
+        boolean[][] cols = new boolean[9][9];
+        boolean[][] boxes = new boolean[9][9];
+
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] != '.') {
+                    int num = board[i][j] - '1';
+                    int boxIndex = (i / 3) * 3 + j / 3;
+
+                    if (rows[i][num] || cols[j][num] || boxes[boxIndex][num]) {
+                        return false;
+                    }
+
+                    rows[i][num] = true;
+                    cols[j][num] = true;
+                    boxes[boxIndex][num] = true;
+                }
+            }
+        }
+
+        return true;
+    }
+}
+This solution uses three boolean arrays, rows, cols, and boxes, to keep track of the presence of numbers from 1 to 9 in each row, column, and box (3x3 subgrid) of the Sudoku board.
+
+The solution iterates through each cell in the board and checks if it contains a number. If the cell is not empty ('.'), it converts the character to an integer by subtracting '1'. It also computes the box index based on the cell's row and column.
+
+Then, it checks if the number already exists in the corresponding row, column, or box. If it does, it means there is a duplicate, and the method returns false. Otherwise, it updates the corresponding boolean value to indicate the presence of the number in the row, column, and box.
+
+If the loop completes without finding any duplicates, the method returns true, indicating that the Sudoku board is valid.
+
+By using the three boolean arrays to track the presence of numbers in rows, columns, and boxes, the solution achieves an optimized approach with a time complexity of O(1) since the board size is fixed.
+
+OR====
+
+Time Complexity: O(N * N)
+Auxiliary Space: O(1) 
+
+
+import java.io.*;
+import java.util.*;
+ 
+class GFG {
+ 
+    // Checks whether there is any duplicate
+    // in current row or not
+    public static boolean notInRow(char arr[][], int row)
+    {
+ 
+        // Set to store characters seen so far.
+        HashSet<Character> st = new HashSet<>();
+ 
+        for (int i = 0; i < 9; i++) {
+ 
+            // If already encountered before,
+            // return false
+            if (st.contains(arr[row][i]))
+                return false;
+ 
+            // If it is not an empty cell, insert value
+            // at the current cell in the set
+            if (arr[row][i] != '.')
+                st.add(arr[row][i]);
+        }
+        return true;
+    }
+ 
+    // Checks whether there is any duplicate
+    // in current column or not.
+    public static boolean notInCol(char arr[][], int col)
+    {
+        HashSet<Character> st = new HashSet<>();
+ 
+        for (int i = 0; i < 9; i++) {
+ 
+            // If already encountered before,
+            // return false
+            if (st.contains(arr[i][col]))
+                return false;
+ 
+            // If it is not an empty cell,
+            // insert value at the current
+            // cell in the set
+            if (arr[i][col] != '.')
+                st.add(arr[i][col]);
+        }
+        return true;
+    }
+ 
+    // Checks whether there is any duplicate
+    // in current 3x3 box or not.
+    public static boolean
+    notInBox(char arr[][], int startRow, int startCol)
+    {
+        HashSet<Character> st = new HashSet<>();
+ 
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                char curr
+                    = arr[row + startRow][col + startCol];
+ 
+                // If already encountered before, return
+                // false
+                if (st.contains(curr))
+                    return false;
+ 
+                // If it is not an empty cell,
+                // insert value at current cell in set
+                if (curr != '.')
+                    st.add(curr);
+            }
+        }
+        return true;
+    }
+ 
+    // Checks whether current row and current column and
+    // current 3x3 box is valid or not
+    public static boolean isValid(char arr[][], int row,
+                                  int col)
+    {
+        return notInRow(arr, row) && notInCol(arr, col)
+            && notInBox(arr, row - row % 3, col - col % 3);
+    }
+ 
+    public static boolean isValidConfig(char arr[][], int n)
+    {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+ 
+                // If current row or current column or
+                // current 3x3 box is not valid, return
+                // false
+                if (!isValid(arr, i, j))
+                    return false;
+            }
+        }
+        return true;
+    }
+ 
+    // Driver's code
+    public static void main(String[] args)
+    {
+        char[][] board = new char[][] {
+            { '5', '3', '.', '.', '7', '.', '.', '.', '.' },
+            { '6', '.', '.', '1', '9', '5', '.', '.', '.' },
+            { '.', '9', '8', '.', '.', '.', '.', '6', '.' },
+            { '8', '.', '.', '.', '6', '.', '.', '.', '3' },
+            { '4', '.', '.', '8', '.', '3', '.', '.', '1' },
+            { '7', '.', '.', '.', '2', '.', '.', '.', '6' },
+            { '.', '6', '.', '.', '.', '.', '2', '8', '.' },
+            { '.', '.', '.', '4', '1', '9', '.', '.', '5' },
+            { '.', '.', '.', '.', '8', '.', '.', '7', '9' }
+        };
+ 
+        // Function call
+        System.out.println(
+            (isValidConfig(board, 9) ? "YES" : "NO"));
+    }
+}
+
+https://leetcode.com/problems/encode-and-decode-strings/
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Codec {
+    // Encodes a list of strings to a single string.
+    public String encode(List<String> strs) {
+        StringBuilder sb = new StringBuilder();
+        
+        for (String str : strs) {
+            sb.append(str.length()).append('/').append(str);
+        }
+        
+        return sb.toString();
+    }
+
+    // Decodes a single string to a list of strings.
+    public List<String> decode(String s) {
+        List<String> strs = new ArrayList<>();
+        
+        int i = 0;
+        while (i < s.length()) {
+            int slashIndex = s.indexOf('/', i);
+            int length = Integer.parseInt(s.substring(i, slashIndex));
+            
+            strs.add(s.substring(slashIndex + 1, slashIndex + 1 + length));
+            
+            i = slashIndex + length + 1;
+        }
+        
+        return strs;
+    }
+}
+
+
+https://leetcode.com/problems/longest-consecutive-sequence/ - o(n)
+import java.util.HashSet;
+
+public class Solution {
+    public int longestConsecutive(int[] nums) {
+        HashSet<Integer> numSet = new HashSet<>();
+        
+        // Add all numbers to a HashSet for O(1) lookup
+        for (int num : nums) {
+            numSet.add(num);
+        }
+        
+        int longestStreak = 0;
+        
+        // Iterate through each number in the array
+        for (int num : nums) {
+            // Check if the current number is the start of a sequence
+            if (!numSet.contains(num - 1)) {
+                int currentNum = num;
+                int currentStreak = 1;
+                
+                // Keep incrementing the current number and updating the streak until the sequence ends
+                while (numSet.contains(currentNum + 1)) {
+                    currentNum++;
+                    currentStreak++;
+                }
+                
+                // Update the longest streak if necessary
+                longestStreak = Math.max(longestStreak, currentStreak);
+            }
+        }
+        
+        return longestStreak;
+    }
+}
+
+
+"Pointer=====

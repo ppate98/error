@@ -1,0 +1,243 @@
+1. Merge Intervals
+cpp
+Copy code
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    std::vector<std::vector<int>> merge(std::vector<std::vector<int>>& intervals) {
+        if (intervals.empty()) {
+            return {};
+        }
+        
+        // Sort the intervals based on the start time
+        std::sort(intervals.begin(), intervals.end());
+        
+        std::vector<std::vector<int>> mergedIntervals;
+        mergedIntervals.push_back(intervals[0]);
+        
+        for (int i = 1; i < intervals.size(); i++) {
+            if (intervals[i][0] <= mergedIntervals.back()[1]) {
+                // Overlapping intervals, update the end time
+                mergedIntervals.back()[1] = std::max(mergedIntervals.back()[1], intervals[i][1]);
+            } else {
+                // Non-overlapping interval, add the current interval to the result list
+                mergedIntervals.push_back(intervals[i]);
+            }
+        }
+        
+        return mergedIntervals;
+    }
+};
+Time complexity: O(n log n)
+Space complexity: O(n)
+2. Non-Overlapping Intervals
+cpp
+Copy code
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int eraseOverlapIntervals(std::vector<std::vector<int>>& intervals) {
+        if (intervals.empty()) {
+            return 0;
+        }
+        
+        // Sort the intervals based on the end time
+        std::sort(intervals.begin(), intervals.end(), [](const std::vector<int>& a, const std::vector<int>& b) {
+            return a[1] < b[1];
+        });
+        
+        int count = 0;
+        int end = intervals[0][1];
+        
+        for (int i = 1; i < intervals.size(); i++) {
+            if (intervals[i][0] < end) {
+                // Overlapping interval found, increment the count
+                count++;
+            } else {
+                // Non-overlapping interval found, update the end time
+                end = intervals[i][1];
+            }
+        }
+        
+        return count;
+    }
+};
+Time complexity: O(n log n)
+Space complexity: O(1)
+3. Meeting Rooms
+cpp
+Copy code
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    bool canAttendMeetings(std::vector<std::vector<int>>& intervals) {
+        int n = intervals.size();
+
+        std::vector<int> startTimes(n), endTimes(n);
+
+        for (int i = 0; i < n; i++) {
+            startTimes[i] = intervals[i][0];
+            endTimes[i] = intervals[i][1];
+        }
+
+        std::sort(startTimes.begin(), startTimes.end());
+        std::sort(endTimes.begin(), endTimes.end());
+
+        for (int i = 1; i < n; i++) {
+            if (startTimes[i] < endTimes[i - 1]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+};
+Time complexity: O(n log n)
+Space complexity: O(n)
+4. Meeting Rooms II
+cpp
+Copy code
+#include <vector>
+#include <algorithm>
+#include <queue>
+
+class Solution {
+public:
+    int minMeetingRooms(std::vector<std::vector<int>>& intervals) {
+        if (intervals.empty()) {
+            return 0;
+        }
+        
+        // Sort the intervals based on the start time
+        std::sort(intervals.begin(), intervals.end(), [](const std::vector<int>& a, const std::vector<int>& b) {
+            return a[0] < b[0];
+        });
+        
+        // Min-heap to store the end times of meetings
+        std::priority_queue<int, std::vector<int>, std::greater<int>> minHeap;
+        
+        // Add the first meeting's end time to the heap
+        minHeap.push(intervals[0][1]);
+        
+        for (int i = 1; i < intervals.size(); i++) {
+            if (intervals[i][0] >= minHeap.top()) {
+                // Reuse the earliest available room
+                minHeap.pop();
+            }
+            
+            // Add the current meeting's end time to the heap
+            minHeap.push(intervals[i][1]);
+        }
+        
+        return minHeap.size();
+    }
+};
+Time complexity: O(n log n)
+Space complexity: O(n)
+5. Minimum Interval to Include Each Query
+cpp
+Copy code
+#include <vector>
+#include <algorithm>
+#include <queue>
+#include <map>
+
+class Solution {
+public:
+    std::vector<int> minInterval(std::vector<std::vector<int>>& intervals, std::vector<int>& queries) {
+        int n = queries.size();
+        std::vector<int> result(n);
+        
+        // Sort intervals by start time
+        std::sort(intervals.begin(), intervals.end(), [](const std::vector<int>& a, const std::vector<int>& b) {
+            return a[0] < b[0];
+        });
+        
+        std::vector<std::pair<int, int>> queryIndices(n);
+        for (int i = 0; i < n; i++) {
+            queryIndices[i] = {queries[i], i};
+        }
+        
+        // Sort the queries
+        std::sort(queryIndices.begin(), queryIndices.end());
+        
+        std::priority_queue<std::vector<int>, std::vector<std::vector<int>>, std::greater<>> pq;
+        
+        int i = 0;
+        for (auto& query : queryIndices) {
+            int queryValue = query.first;
+            int index = query.second;
+            
+            // Add intervals that start before or at the query value
+            while (i < intervals.size() && intervals[i][0] <= queryValue) {
+                pq.push(intervals[i]);
+                i++;
+            }
+            
+            // Remove intervals that no longer include the query value
+            while (!pq.empty() && pq.top()[1] < queryValue) {
+                pq.pop();
+            }
+            
+            // Answer for the query
+            if (!pq.empty()) {
+                result[index] = pq.top()[1] - pq.top()[0] + 1;
+            } else {
+                result[index] = -1;
+            }
+        }
+        
+        return result;
+    }
+};
+Time complexity: O(n log n)
+Space complexity: O(n)
+6. Insert Interval
+cpp
+Copy code
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    std::vector<std::vector<int>> insert(std::vector<std::vector<int>>& intervals, std::vector<int>& newInterval) {
+        std::vector<std::vector<int>> mergedIntervals;
+        int i = 0, n = intervals.size();
+        
+        // Add intervals that end before the newInterval starts
+        while (i < n && intervals[i][1] < newInterval[0]) {
+            mergedIntervals.push_back(intervals[i]);
+            i++;
+        }
+        
+        // Merge intervals that overlap with the newInterval
+        while (i < n && intervals[i][0] <= newInterval[1]) {
+            newInterval[0] = std::min(newInterval[0], intervals[i][0]);
+            newInterval[1] = std::max(newInterval[1], intervals[i][1]);
+            i++;
+        }
+        
+        // Add the merged newInterval
+        mergedIntervals.push_back(newInterval);
+        
+        // Add the remaining intervals
+        while (i < n) {
+            mergedIntervals.push_back(intervals[i]);
+            i++;
+        }
+        
+        return mergedIntervals;
+    }
+};
+Time complexity: O(n)
+Space complexity: O(n)
+Summary of Time and Space Complexities:
+Time complexity: Most solutions involve sorting, which takes O(n log n), with the exception of some problems where operations are linear O(n).
+Space complexity: Typically O(n) to store results or intervals, depending on the problem.
+These C++ solutions aim to provide the most efficient approach for the respective problems.

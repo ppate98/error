@@ -1,0 +1,371 @@
+https://leetcode.com/problems/subsets/
+import java.util.*;
+
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> subsets = new ArrayList<>();
+        List<Integer> currentSubset = new ArrayList<>();
+        
+        backtrack(nums, 0, currentSubset, subsets);
+        
+        return subsets;
+    }
+    
+    private void backtrack(int[] nums, int start, List<Integer> currentSubset, List<List<Integer>> subsets) {
+        subsets.add(new ArrayList<>(currentSubset));
+        
+        for (int i = start; i < nums.length; i++) {
+            currentSubset.add(nums[i]);
+            backtrack(nums, i + 1, currentSubset, subsets);
+            currentSubset.remove(currentSubset.size() - 1);
+        }
+    }
+}
+
+https://leetcode.com/problems/combination-sum/
+
+import java.util.*;
+
+class Solution {
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> combinations = new ArrayList<>();
+        List<Integer> currentCombination = new ArrayList<>();
+        
+        backtrack(candidates, target, 0, currentCombination, combinations);
+        
+        return combinations;
+    }
+    
+    private void backtrack(int[] candidates, int target, int start, List<Integer> currentCombination, List<List<Integer>> combinations) {
+        if (target == 0) {
+            combinations.add(new ArrayList<>(currentCombination));
+            return;
+        }
+        
+        for (int i = start; i < candidates.length; i++) {
+            int num = candidates[i];
+            
+            if (num > target) {
+                break; // No need to consider larger numbers
+            }
+            
+            currentCombination.add(num);
+            backtrack(candidates, target - num, i, currentCombination, combinations);
+            currentCombination.remove(currentCombination.size() - 1);
+        }
+    }
+}
+
+
+https://leetcode.com/problems/permutations/
+
+import java.util.*;
+
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> permutations = new ArrayList<>();
+        List<Integer> currentPermutation = new ArrayList<>();
+        boolean[] used = new boolean[nums.length];
+        
+        backtrack(nums, used, currentPermutation, permutations);
+        
+        return permutations;
+    }
+    
+    private void backtrack(int[] nums, boolean[] used, List<Integer> currentPermutation, List<List<Integer>> permutations) {
+        if (currentPermutation.size() == nums.length) {
+            permutations.add(new ArrayList<>(currentPermutation));
+            return;
+        }
+        
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i]) {
+                continue; // Skip already used elements
+            }
+            
+            currentPermutation.add(nums[i]);
+            used[i] = true;
+            backtrack(nums, used, currentPermutation, permutations);
+            currentPermutation.remove(currentPermutation.size() - 1);
+            used[i] = false;
+        }
+    }
+}
+
+
+https://leetcode.com/problems/subsets-ii/
+
+import java.util.*;
+
+class Solution {
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> subsets = new ArrayList<>();
+        List<Integer> currentSubset = new ArrayList<>();
+        
+        Arrays.sort(nums);
+        
+        backtrack(nums, 0, currentSubset, subsets);
+        
+        return subsets;
+    }
+    
+    private void backtrack(int[] nums, int start, List<Integer> currentSubset, List<List<Integer>> subsets) {
+        subsets.add(new ArrayList<>(currentSubset));
+        
+        for (int i = start; i < nums.length; i++) {
+            if (i > start && nums[i] == nums[i - 1]) {
+                continue; // Skip duplicates
+            }
+            
+            currentSubset.add(nums[i]);
+            backtrack(nums, i + 1, currentSubset, subsets);
+            currentSubset.remove(currentSubset.size() - 1);
+        }
+    }
+}
+
+
+https://leetcode.com/problems/combination-sum-ii/
+
+import java.util.*;
+
+class Solution {
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> combinations = new ArrayList<>();
+        List<Integer> currentCombination = new ArrayList<>();
+        
+        Arrays.sort(candidates);
+        
+        backtrack(candidates, target, 0, currentCombination, combinations);
+        
+        return combinations;
+    }
+    
+    private void backtrack(int[] candidates, int target, int start, List<Integer> currentCombination, List<List<Integer>> combinations) {
+        if (target == 0) {
+            combinations.add(new ArrayList<>(currentCombination));
+            return;
+        }
+        
+        for (int i = start; i < candidates.length; i++) {
+            if (i > start && candidates[i] == candidates[i - 1]) {
+                continue; // Skip duplicates
+            }
+            
+            int num = candidates[i];
+            
+            if (num > target) {
+                break; // No need to consider larger numbers
+            }
+            
+            currentCombination.add(num);
+            backtrack(candidates, target - num, i + 1, currentCombination, combinations);
+            currentCombination.remove(currentCombination.size() - 1);
+        }
+    }
+}
+
+
+https://leetcode.com/problems/word-search/
+class Solution {
+    public boolean exist(char[][] board, String word) {
+        int rows = board.length;
+        int cols = board[0].length;
+        
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (board[i][j] == word.charAt(0) && backtrack(board, word, i, j, 0)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    private boolean backtrack(char[][] board, String word, int row, int col, int index) {
+        if (index == word.length()) {
+            return true;
+        }
+        
+        if (row < 0 || col < 0 || row >= board.length || col >= board[0].length || board[row][col] != word.charAt(index)) {
+            return false;
+        }
+        
+        char originalChar = board[row][col];
+        board[row][col] = '#'; // Mark the current cell as visited
+        
+        boolean found =
+            backtrack(board, word, row + 1, col, index + 1) ||
+            backtrack(board, word, row - 1, col, index + 1) ||
+            backtrack(board, word, row, col + 1, index + 1) ||
+            backtrack(board, word, row, col - 1, index + 1);
+        
+        board[row][col] = originalChar; // Restore the original character
+        
+        return found;
+    }
+}
+
+https://leetcode.com/problems/palindrome-partitioning/
+
+import java.util.*;
+
+class Solution {
+    public List<List<String>> partition(String s) {
+        List<List<String>> partitions = new ArrayList<>();
+        List<String> currentPartition = new ArrayList<>();
+        
+        backtrack(s, 0, currentPartition, partitions);
+        
+        return partitions;
+    }
+    
+    private void backtrack(String s, int start, List<String> currentPartition, List<List<String>> partitions) {
+        if (start == s.length()) {
+            partitions.add(new ArrayList<>(currentPartition));
+            return;
+        }
+        
+        for (int end = start; end < s.length(); end++) {
+            if (isPalindrome(s, start, end)) {
+                String palindrome = s.substring(start, end + 1);
+                currentPartition.add(palindrome);
+                backtrack(s, end + 1, currentPartition, partitions);
+                currentPartition.remove(currentPartition.size() - 1);
+            }
+        }
+    }
+    
+    private boolean isPalindrome(String s, int start, int end) {
+        while (start < end) {
+            if (s.charAt(start) != s.charAt(end)) {
+                return false;
+            }
+            start++;
+            end--;
+        }
+        return true;
+    }
+}
+
+https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+
+import java.util.*;
+
+class Solution {
+    private static final String[] KEYPAD = {
+        "",     // 0
+        "",     // 1
+        "abc",  // 2
+        "def",  // 3
+        "ghi",  // 4
+        "jkl",  // 5
+        "mno",  // 6
+        "pqrs", // 7
+        "tuv",  // 8
+        "wxyz"  // 9
+    };
+    
+    public List<String> letterCombinations(String digits) {
+        List<String> combinations = new ArrayList<>();
+        
+        if (digits.isEmpty()) {
+            return combinations;
+        }
+        
+        backtrack(digits, 0, new StringBuilder(), combinations);
+        
+        return combinations;
+    }
+    
+    private void backtrack(String digits, int index, StringBuilder current, List<String> combinations) {
+        if (index == digits.length()) {
+            combinations.add(current.toString());
+            return;
+        }
+        
+        char digit = digits.charAt(index);
+        String letters = KEYPAD[digit - '0'];
+        
+        for (char letter : letters.toCharArray()) {
+            current.append(letter);
+            backtrack(digits, index + 1, current, combinations);
+            current.deleteCharAt(current.length() - 1);
+        }
+    }
+}
+
+
+https://leetcode.com/problems/n-queens/
+import java.util.*;
+
+class Solution {
+    public List<List<String>> solveNQueens(int n) {
+        List<List<String>> solutions = new ArrayList<>();
+        char[][] board = new char[n][n];
+        
+        // Initialize the board
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(board[i], '.');
+        }
+        
+        backtrack(board, 0, solutions);
+        
+        return solutions;
+    }
+    
+    private void backtrack(char[][] board, int row, List<List<String>> solutions) {
+        int n = board.length;
+        
+        if (row == n) {
+            solutions.add(constructSolution(board));
+            return;
+        }
+        
+        for (int col = 0; col < n; col++) {
+            if (isValid(board, row, col)) {
+                board[row][col] = 'Q';
+                backtrack(board, row + 1, solutions);
+                board[row][col] = '.';
+            }
+        }
+    }
+    
+    private boolean isValid(char[][] board, int row, int col) {
+        int n = board.length;
+        
+        // Check if there is a queen in the same column
+        for (int i = 0; i < row; i++) {
+            if (board[i][col] == 'Q') {
+                return false;
+            }
+        }
+        
+        // Check if there is a queen in the upper-left diagonal
+        for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] == 'Q') {
+                return false;
+            }
+        }
+        
+        // Check if there is a queen in the upper-right diagonal
+        for (int i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++) {
+            if (board[i][j] == 'Q') {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    private List<String> constructSolution(char[][] board) {
+        List<String> solution = new ArrayList<>();
+        
+        for (char[] row : board) {
+            solution.add(new String(row));
+        }
+        
+        return solution;
+    }
+}

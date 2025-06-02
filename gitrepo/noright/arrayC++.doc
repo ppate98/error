@@ -1,0 +1,285 @@
+1. Contains Duplicate
+Problem: Contains Duplicate
+
+cpp
+Copy code
+#include <vector>
+#include <unordered_set>
+
+class Solution {
+public:
+    bool containsDuplicate(std::vector<int>& nums) {
+        std::unordered_set<int> set;
+        for (int num : nums) {
+            if (set.count(num)) {
+                return true;
+            }
+            set.insert(num);
+        }
+        return false;
+    }
+};
+2. Valid Anagram
+Problem: Valid Anagram
+
+cpp
+Copy code
+#include <string>
+#include <vector>
+
+class Solution {
+public:
+    bool isAnagram(std::string s, std::string t) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        std::vector<int> counter(26, 0);
+        for (int i = 0; i < s.size(); i++) {
+            counter[s[i] - 'a']++;
+            counter[t[i] - 'a']--;
+        }
+
+        for (int count : counter) {
+            if (count != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+3. Two Sum
+Problem: Two Sum
+
+cpp
+Copy code
+#include <vector>
+#include <unordered_map>
+
+class Solution {
+public:
+    std::vector<int> twoSum(std::vector<int>& nums, int target) {
+        std::unordered_map<int, int> map;
+        for (int i = 0; i < nums.size(); i++) {
+            int complement = target - nums[i];
+            if (map.count(complement)) {
+                return {map[complement], i};
+            }
+            map[nums[i]] = i;
+        }
+        throw std::invalid_argument("No solution");
+    }
+};
+4. Group Anagrams
+Problem: Group Anagrams
+
+cpp
+Copy code
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include <algorithm>
+
+class Solution {
+public:
+    std::vector<std::vector<std::string>> groupAnagrams(std::vector<std::string>& strs) {
+        std::unordered_map<std::string, std::vector<std::string>> map;
+        for (const auto& str : strs) {
+            std::string sortedStr = str;
+            std::sort(sortedStr.begin(), sortedStr.end());
+            map[sortedStr].push_back(str);
+        }
+
+        std::vector<std::vector<std::string>> result;
+        for (auto& entry : map) {
+            result.push_back(std::move(entry.second));
+        }
+        return result;
+    }
+};
+5. Top K Frequent Elements
+Problem: Top K Frequent Elements
+
+cpp
+Copy code
+#include <vector>
+#include <unordered_map>
+#include <queue>
+
+class Solution {
+public:
+    std::vector<int> topKFrequent(std::vector<int>& nums, int k) {
+        std::unordered_map<int, int> countMap;
+        for (int num : nums) {
+            countMap[num]++;
+        }
+
+        using Pair = std::pair<int, int>;
+        auto comp = [](Pair& a, Pair& b) { return a.second > b.second; };
+        std::priority_queue<Pair, std::vector<Pair>, decltype(comp)> pq(comp);
+
+        for (const auto& entry : countMap) {
+            pq.push(entry);
+            if (pq.size() > k) {
+                pq.pop();
+            }
+        }
+
+        std::vector<int> result;
+        while (!pq.empty()) {
+            result.push_back(pq.top().first);
+            pq.pop();
+        }
+        return result;
+    }
+};
+6. Product of Array Except Self
+Problem: Product of Array Except Self
+
+cpp
+Copy code
+#include <vector>
+
+class Solution {
+public:
+    std::vector<int> productExceptSelf(std::vector<int>& nums) {
+        int n = nums.size();
+        std::vector<int> output(n, 1);
+        int leftProduct = 1, rightProduct = 1;
+
+        for (int i = 0; i < n; i++) {
+            output[i] = leftProduct;
+            leftProduct *= nums[i];
+        }
+
+        for (int i = n - 1; i >= 0; i--) {
+            output[i] *= rightProduct;
+            rightProduct *= nums[i];
+        }
+
+        return output;
+    }
+};
+7. Valid Sudoku
+Problem: Valid Sudoku
+
+cpp
+Copy code
+#include <vector>
+
+class Solution {
+public:
+    bool isValidSudoku(std::vector<std::vector<char>>& board) {
+        bool rows[9][9] = {false};
+        bool cols[9][9] = {false};
+        bool boxes[9][9] = {false};
+
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] != '.') {
+                    int num = board[i][j] - '1';
+                    int boxIndex = (i / 3) * 3 + j / 3;
+
+                    if (rows[i][num] || cols[j][num] || boxes[boxIndex][num]) {
+                        return false;
+                    }
+
+                    rows[i][num] = cols[j][num] = boxes[boxIndex][num] = true;
+                }
+            }
+        }
+        return true;
+    }
+};
+8. Encode and Decode Strings
+Problem: Encode and Decode Strings
+
+cpp
+Copy code
+#include <vector>
+#include <string>
+
+class Codec {
+public:
+    std::string encode(const std::vector<std::string>& strs) {
+        std::string encoded;
+        for (const auto& str : strs) {
+            encoded += std::to_string(str.length()) + '/' + str;
+        }
+        return encoded;
+    }
+
+    std::vector<std::string> decode(const std::string& s) {
+        std::vector<std::string> decoded;
+        int i = 0;
+        while (i < s.size()) {
+            int slashPos = s.find('/', i);
+            int len = std::stoi(s.substr(i, slashPos - i));
+            decoded.push_back(s.substr(slashPos + 1, len));
+            i = slashPos + len + 1;
+        }
+        return decoded;
+    }
+};
+9. Longest Consecutive Sequence
+Problem: Longest Consecutive Sequence
+
+cpp
+Copy code
+#include <vector>
+#include <unordered_set>
+
+class Solution {
+public:
+    int longestConsecutive(std::vector<int>& nums) {
+        std::unordered_set<int> numSet(nums.begin(), nums.end());
+        int longestStreak = 0;
+
+        for (int num : nums) {
+            if (!numSet.count(num - 1)) {
+                int currentNum = num;
+                int currentStreak = 1;
+
+                while (numSet.count(currentNum + 1)) {
+                    currentNum++;
+                    currentStreak++;
+                }
+
+                longestStreak = std::max(longestStreak, currentStreak);
+            }
+        }
+
+        return longestStreak;
+    }
+};
+
+
+
+1. Contains Duplicate
+Time Complexity: O(n) - Each element is inserted and checked once in the HashSet.
+Space Complexity: O(n) - Space is required to store elements in the HashSet.
+2. Valid Anagram
+Time Complexity: O(n) - Looping through each character in both strings to update the frequency counter array.
+Space Complexity: O(1) - The frequency array has a fixed size of 26 (one for each letter in the alphabet), so it’s constant space.
+3. Two Sum
+Time Complexity: O(n) - Each element is inserted and checked once in the HashMap.
+Space Complexity: O(n) - Space is required to store elements in the HashMap.
+4. Group Anagrams
+Time Complexity: O(n * k * log k) - Where n is the number of strings and k is the maximum length of a string. Sorting each string has O(k * log k) complexity.
+Space Complexity: O(n * k) - Space for storing the strings in the HashMap.
+5. Top K Frequent Elements
+Time Complexity: O(n * log k) - Counting elements is O(n), and maintaining the top k elements in a min-heap has O(n * log k) complexity.
+Space Complexity: O(n + k) - Space for the HashMap of frequencies and the min-heap of size k.
+6. Product of Array Except Self
+Time Complexity: O(n) - One pass to calculate the left products and another pass for the right products.
+Space Complexity: O(1) - Output array doesn’t count as extra space; otherwise, only constant space is used.
+7. Valid Sudoku
+Time Complexity: O(1) - Since the board size is fixed at 9x9, it’s treated as a constant time operation.
+Space Complexity: O(1) - Three boolean arrays each of size 9x9, so it is constant space.
+8. Encode and Decode Strings
+Time Complexity: O(n) - Encoding and decoding each string requires one pass through the strings.
+Space Complexity: O(n) - Space to store the encoded string or decoded list of strings.
+9. Longest Consecutive Sequence
+Time Complexity: O(n) - Each number is inserted into the HashSet once, and then a constant-time check for each sequence start.
+Space Complexity: O(n) - Space required to store the numbers in a HashSet.
+

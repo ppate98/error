@@ -1,0 +1,199 @@
+1. Maximum Subarray (Kadane's Algorithm)
+cpp
+Copy code
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int maxSubArray(std::vector<int>& nums) {
+        int currentSum = nums[0];
+        int maxSum = nums[0];
+        
+        for (int i = 1; i < nums.size(); i++) {
+            currentSum = std::max(nums[i], currentSum + nums[i]);
+            maxSum = std::max(maxSum, currentSum);
+        }
+        
+        return maxSum;
+    }
+};
+Time complexity: O(n)
+Space complexity: O(1)
+2. Jump Game
+cpp
+Copy code
+#include <vector>
+
+class Solution {
+public:
+    bool canJump(std::vector<int>& nums) {
+        int lastIndex = nums.size() - 1;
+        
+        for (int i = 0; i < nums.size(); i++) {
+            if (i + nums[i] >= lastIndex) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+};
+Time complexity: O(n)
+Space complexity: O(1)
+3. Jump Game II
+cpp
+Copy code
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int jump(std::vector<int>& nums) {
+        int maxReach = 0;
+        int steps = 0;
+        int lastJump = 0;
+        
+        for (int i = 0; i < nums.size() - 1; i++) {
+            maxReach = std::max(maxReach, i + nums[i]);
+            
+            if (i == lastJump) {
+                lastJump = maxReach;
+                steps++;
+            }
+        }
+        
+        return steps;
+    }
+};
+Time complexity: O(n)
+Space complexity: O(1)
+4. Gas Station
+cpp
+Copy code
+#include <vector>
+
+class Solution {
+public:
+    int canCompleteCircuit(std::vector<int>& gas, std::vector<int>& cost) {
+        int totalTank = 0;
+        int currentTank = 0;
+        int startStation = 0;
+        
+        for (int i = 0; i < gas.size(); i++) {
+            int difference = gas[i] - cost[i];
+            totalTank += difference;
+            currentTank += difference;
+            
+            if (currentTank < 0) {
+                currentTank = 0;
+                startStation = i + 1;
+            }
+        }
+        
+        return (totalTank >= 0) ? startStation : -1;
+    }
+};
+Time complexity: O(n)
+Space complexity: O(1)
+5. Hand of Straights
+cpp
+Copy code
+#include <vector>
+#include <map>
+
+class Solution {
+public:
+    bool isNStraightHand(std::vector<int>& hand, int W) {
+        std::map<int, int> countMap;
+        
+        for (int card : hand) {
+            countMap[card]++;
+        }
+        
+        while (!countMap.empty()) {
+            int smallestCard = countMap.begin()->first;
+            
+            for (int i = smallestCard; i < smallestCard + W; i++) {
+                if (countMap.find(i) == countMap.end()) {
+                    return false;
+                }
+                
+                if (--countMap[i] == 0) {
+                    countMap.erase(i);
+                }
+            }
+        }
+        
+        return true;
+    }
+};
+Time complexity: O(n log n) due to map operations
+Space complexity: O(n)
+6. Partition Labels
+cpp
+Copy code
+#include <vector>
+#include <unordered_map>
+
+class Solution {
+public:
+    std::vector<int> partitionLabels(std::string S) {
+        std::unordered_map<char, int> lastIndexMap;
+        std::vector<int> partitionLengths;
+        
+        for (int i = 0; i < S.size(); i++) {
+            lastIndexMap[S[i]] = i;
+        }
+        
+        int start = 0;
+        int end = 0;
+        
+        for (int i = 0; i < S.size(); i++) {
+            end = std::max(end, lastIndexMap[S[i]]);
+            
+            if (i == end) {
+                partitionLengths.push_back(end - start + 1);
+                start = end + 1;
+            }
+        }
+        
+        return partitionLengths;
+    }
+};
+Time complexity: O(n)
+Space complexity: O(n)
+7. Valid Parenthesis String
+cpp
+Copy code
+#include <string>
+#include <algorithm>
+
+class Solution {
+public:
+    bool checkValidString(std::string s) {
+        int minOpen = 0;
+        int maxOpen = 0;
+        
+        for (char c : s) {
+            if (c == '(') {
+                minOpen++;
+                maxOpen++;
+            } else if (c == ')') {
+                minOpen--;
+                maxOpen--;
+            } else { // c == '*'
+                minOpen = std::max(0, minOpen - 1);
+                maxOpen++;
+            }
+            
+            if (maxOpen < 0) {
+                return false;
+            }
+        }
+        
+        return minOpen == 0;
+    }
+};
+Time complexity: O(n)
+Space complexity: O(1)

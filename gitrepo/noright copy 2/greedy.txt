@@ -1,0 +1,194 @@
+https://leetcode.com/problems/maximum-subarray/
+class Solution {
+    public int maxSubArray(int[] nums) {
+        int currentSum = nums[0];
+        int maxSum = nums[0];
+        
+        for (int i = 1; i < nums.length; i++) {
+            currentSum = Math.max(nums[i], currentSum + nums[i]);
+            maxSum = Math.max(maxSum, currentSum);
+        }
+        
+        return maxSum;
+    }
+}
+
+
+https://leetcode.com/problems/jump-game/
+
+  public class JumpGame {
+      public boolean canJump(int[] nums) {
+          int lastGoodIndex = nums.length - 1;
+          
+          // Traverse the array from the end to the start
+          for (int i = nums.length - 2; i >= 0; i--) {
+              if (i + nums[i] >= lastGoodIndex) { // If we can jump to or past the last good index
+                  lastGoodIndex = i; // Update the last good index
+              }
+          }
+          
+          // If we managed to move the last good index to 0, we can reach the end
+          return lastGoodIndex == 0;
+      }
+  
+      public static void main(String[] args) {
+          JumpGame jumpGame = new JumpGame();
+          int[] nums = {2, 3, 1, 1, 4};
+          System.out.println("Can jump: " + jumpGame.canJump(nums)); // true
+  
+          int[] nums2 = {3, 2, 1, 0, 4};
+          System.out.println("Can jump: " + jumpGame.canJump(nums2)); // false
+      }
+  }
+
+
+
+https://leetcode.com/problems/jump-game-ii/
+
+public class JumpGameII {
+    public int jump(int[] nums) {
+        if (nums.length <= 1) return 0;
+        
+        int jumps = 0;
+        int currentEnd = 0;
+        int farthest = 0;
+        
+        for (int i = 0; i < nums.length - 1; i++) {
+            farthest = Math.max(farthest, i + nums[i]);
+            if (i == currentEnd) {
+                jumps++;
+                currentEnd = farthest;
+            }
+        }
+        
+        return jumps;
+    }
+
+    public static void main(String[] args) {
+        JumpGameII jumpGameII = new JumpGameII();
+        int[] nums = {2, 3, 1, 1, 4};
+        System.out.println("Minimum jumps: " + jumpGameII.jump(nums)); // 2
+
+        int[] nums2 = {2, 3, 0, 1, 4};
+        System.out.println("Minimum jumps: " + jumpGameII.jump(nums2)); // 2
+    }
+}
+
+
+
+https://leetcode.com/problems/gas-station/
+
+class Solution {
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int totalTank = 0;
+        int currentTank = 0;
+        int startStation = 0;
+        
+        for (int i = 0; i < gas.length; i++) {
+            int difference = gas[i] - cost[i];
+            totalTank += difference;
+            currentTank += difference;
+            
+            if (currentTank < 0) {
+                currentTank = 0;
+                startStation = i + 1;
+            }
+        }
+        
+        return (totalTank >= 0) ? startStation : -1;
+    }
+}
+
+
+https://leetcode.com/problems/hand-of-straights/
+import java.util.TreeMap;
+
+class Solution {
+    public boolean isNStraightHand(int[] hand, int W) {
+        TreeMap<Integer, Integer> countMap = new TreeMap<>();
+        
+        for (int card : hand) {
+            countMap.put(card, countMap.getOrDefault(card, 0) + 1);
+        }
+        
+        while (!countMap.isEmpty()) {
+            int smallestCard = countMap.firstKey();
+            
+            for (int i = smallestCard; i < smallestCard + W; i++) {
+                if (!countMap.containsKey(i)) {
+                    return false;
+                }
+                
+                int count = countMap.get(i);
+                if (count == 1) {
+                    countMap.remove(i);
+                } else {
+                    countMap.put(i, count - 1);
+                }
+            }
+        }
+        
+        return true;
+    }
+}
+
+
+https://leetcode.com/problems/partition-labels/
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+class Solution {
+    public List<Integer> partitionLabels(String S) {
+        List<Integer> partitionLengths = new ArrayList<>();
+        Map<Character, Integer> lastIndexMap = new HashMap<>();
+        
+        for (int i = 0; i < S.length(); i++) {
+            lastIndexMap.put(S.charAt(i), i);
+        }
+        
+        int start = 0;
+        int end = 0;
+        
+        for (int i = 0; i < S.length(); i++) {
+            end = Math.max(end, lastIndexMap.get(S.charAt(i)));
+            
+            if (i == end) {
+                partitionLengths.add(end - start + 1);
+                start = end + 1;
+            }
+        }
+        
+        return partitionLengths;
+    }
+}
+
+https://leetcode.com/problems/valid-parenthesis-string/
+
+class Solution {
+    public boolean checkValidString(String s) {
+        int minOpen = 0;
+        int maxOpen = 0;
+        
+        for (char c : s.toCharArray()) {
+            if (c == '(') {
+                minOpen++;
+                maxOpen++;
+            } else if (c == ')') {
+                minOpen--;
+                maxOpen--;
+            } else { // c == '*'
+                minOpen = Math.max(0, minOpen - 1);
+                maxOpen++;
+            }
+            
+            if (maxOpen < 0) {
+                return false;
+            }
+        }
+        
+        return minOpen == 0;
+    }
+}

@@ -1,0 +1,431 @@
+Here are explanations and solutions for the problems you mentioned:
+
+1. Rotate Image
+Problem: Rotate an n x n 2D matrix by 90 degrees (clockwise) in-place.
+
+Input:
+csharp
+Copy code
+[
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+]
+Output:
+csharp
+Copy code
+[
+  [7, 4, 1],
+  [8, 5, 2],
+  [9, 6, 3]
+]
+Explanation: The solution involves two main steps:
+
+Transpose the matrix: Swap rows with columns (i.e., matrix[i][j] with matrix[j][i]).
+Reverse each row: Reverse the elements of each row to achieve a 90-degree clockwise rotation.
+java
+Copy code
+class Solution {
+    public void rotate(int[][] matrix) {
+        int n = matrix.length;
+        
+        // Step 1: Transpose the matrix
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+        
+        // Step 2: Reverse each row
+        for (int i = 0; i < n; i++) {
+            int left = 0;
+            int right = n - 1;
+            
+            while (left < right) {
+                int temp = matrix[i][left];
+                matrix[i][left] = matrix[i][right];
+                matrix[i][right] = temp;
+                
+                left++;
+                right--;
+            }
+        }
+    }
+}
+2. Spiral Matrix
+Problem: Return all elements of a 2D matrix in spiral order.
+
+Input:
+csharp
+Copy code
+[
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+]
+Output: [1, 2, 3, 6, 9, 8, 7, 4, 5]
+Explanation: The algorithm traverses the matrix in a spiral pattern by maintaining boundaries (rowStart, rowEnd, colStart, colEnd) and shrinking them after each traversal step. The four main directions (top, right, bottom, left) are covered sequentially.
+
+java
+Copy code
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> result = new ArrayList<>();
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return result;
+        }
+
+        int rowStart = 0, rowEnd = matrix.length - 1;
+        int colStart = 0, colEnd = matrix[0].length - 1;
+
+        while (rowStart <= rowEnd && colStart <= colEnd) {
+            // Traverse top row
+            for (int col = colStart; col <= colEnd; col++) {
+                result.add(matrix[rowStart][col]);
+            }
+            rowStart++;
+
+            // Traverse right column
+            for (int row = rowStart; row <= rowEnd; row++) {
+                result.add(matrix[row][colEnd]);
+            }
+            colEnd--;
+
+            if (rowStart > rowEnd || colStart > colEnd) break;
+
+            // Traverse bottom row
+            for (int col = colEnd; col >= colStart; col--) {
+                result.add(matrix[rowEnd][col]);
+            }
+            rowEnd--;
+
+            // Traverse left column
+            for (int row = rowEnd; row >= rowStart; row--) {
+                result.add(matrix[row][colStart]);
+            }
+            colStart++;
+        }
+
+        return result;
+    }
+}
+3. Set Matrix Zeroes
+Problem: Given an m x n matrix, if an element is 0, set its entire row and column to 0s.
+
+Input:
+csharp
+Copy code
+[
+  [1,1,1],
+  [1,0,1],
+  [1,1,1]
+]
+Output:
+csharp
+Copy code
+[
+  [1,0,1],
+  [0,0,0],
+  [1,0,1]
+]
+Explanation: The algorithm works in two steps:
+
+Mark the rows and columns that need to be zeroed by using two sets to track rows and columns that contain zeros.
+Zero out the marked rows and columns by checking if the current row or column is in the set.
+java
+Copy code
+import java.util.HashSet;
+import java.util.Set;
+
+class Solution {
+    public void setZeroes(int[][] matrix) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+
+        Set<Integer> zeroRows = new HashSet<>();
+        Set<Integer> zeroCols = new HashSet<>();
+
+        // Step 1: Find the rows and columns with zeroes
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (matrix[i][j] == 0) {
+                    zeroRows.add(i);
+                    zeroCols.add(j);
+                }
+            }
+        }
+
+        // Step 2: Set the zeroes
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (zeroRows.contains(i) || zeroCols.contains(j)) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+    }
+}
+4. Happy Number
+Problem: Determine if a number is a "happy number". A happy number is defined by the following process:
+
+Starting with any positive integer, replace the number by the sum of the squares of its digits.
+Repeat the process until the number equals 1 (it is a happy number) or loops endlessly in a cycle that does not include 1 (it is not a happy number).
+Input: n = 19
+Output: true
+Explanation: The algorithm iterates through the process of summing the squares of the digits of n. If a cycle is detected (i.e., a number repeats), it's not a happy number. A HashSet is used to track the numbers that have been encountered.
+
+java
+Copy code
+import java.util.HashSet;
+import java.util.Set;
+
+class Solution {
+    public boolean isHappy(int n) {
+        Set<Integer> seen = new HashSet<>();
+
+        while (n != 1 && !seen.contains(n)) {
+            seen.add(n);
+            n = getDigitSquareSum(n);
+        }
+
+        return n == 1;
+    }
+
+    private int getDigitSquareSum(int n) {
+        int sum = 0;
+
+        while (n > 0) {
+            int digit = n % 10;
+            sum += digit * digit;
+            n /= 10;
+        }
+
+        return sum;
+    }
+}
+5. Plus One
+Problem: Given a non-negative integer represented as a non-empty array of digits, increment the number by one.
+
+Input: digits = [1,2,3]
+Output: [1,2,4]
+Explanation: Starting from the least significant digit, the algorithm adds 1 to the last element. If there is a carry (i.e., the digit becomes 10), it sets that digit to 0 and moves the carry to the next digit.
+
+java
+Copy code
+class Solution {
+    public int[] plusOne(int[] digits) {
+        int n = digits.length;
+
+        for (int i = n - 1; i >= 0; i--) {
+            if (digits[i] < 9) {
+                digits[i]++;
+                return digits;
+            }
+
+            digits[i] = 0;
+        }
+
+        int[] result = new int[n + 1];
+        result[0] = 1;
+
+        return result;
+    }
+}
+6. Pow(x, n)
+Problem: Implement pow(x, n) that calculates x raised to the power n.
+
+Input: x = 2.0, n = 10
+Output: 1024.0
+Explanation: This problem can be solved efficiently using exponentiation by squaring, which reduces the time complexity to O(log n).
+
+java
+Copy code
+class Solution {
+    public double myPow(double x, int n) {
+        if (n == 0) {
+            return 1;
+        }
+
+        if (n < 0) {
+            x = 1 / x;
+            n = -n;
+        }
+
+        double result = 1;
+
+        while (n > 0) {
+            if (n % 2 != 0) {
+                result *= x;
+            }
+
+            x *= x;
+            n /= 2;
+        }
+
+        return result;
+    }
+}
+7. Multiply Strings
+Problem: Multiply two non-negative integers represented as strings.
+
+Input: num1 = "2", num2 = "3"
+Output: "6"
+Explanation: The solution performs digit-by-digit multiplication similar to how we do it manually. It uses an array to store intermediate results and handles carries.
+
+java
+Copy code
+class Solution {
+    public String multiply(String num1, String num2) {
+        int n1 = num1.length();
+        int n2 = num2.length();
+
+        int[] result = new int[n1 + n2];
+
+        for (int i = n1 - 1; i >= 0; i--) {
+            for (int j = n2 - 1; j >= 0; j--) {
+                int digit1 = num1.charAt(i) - '0';
+                int digit2 = num2.charAt(j) - '0';
+
+                int product = digit1 * digit2;
+                int sum = result[i + j + 1] + product;
+
+                result[i + j + 1] = sum % 10;
+                result[i + j] += sum / 10;
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int digit : result) {
+            sb.append(digit);
+        }
+
+        while (sb.length() > 0 && sb.charAt(0) == '0') {
+            sb.deleteCharAt(0);
+        }
+
+        if (sb.length() == 0) {
+            return "0";
+        }
+
+        return sb.toString();
+    }
+}
+8. Detect Squares
+Problem: Given a set of points, count the number of squares that can be formed using these points as vertices.
+
+Explanation: The solution leverages a Map of points and calculates possible squares by comparing distance between points and checking for matching points that can form squares. It counts how many valid squares can be formed by four points.
+
+java
+Copy code
+import java.util.HashMap;
+import java.util.Map;
+
+class DetectSquares {
+    private Map<Integer, Map<Integer, Integer>> points;
+
+    public DetectSquares() {
+        points = new HashMap<>();
+    }
+
+    public void add(int[] point) {
+        int x = point[0];
+        int y = point[1];
+
+        points.putIfAbsent(x, new HashMap<>());
+        points.get(x).put(y, points.get(x).getOrDefault(y, 0) + 1);
+    }
+
+    public int count(int[] point) {
+        int x1 = point[0];
+        int y1 = point[1];
+
+        int count = 0;
+
+        for (int x2 : points.keySet()) {
+            if (x2 == x1) continue;
+
+            int distance = Math.abs(x2 - x1);
+
+            for (int y2 : points.get(x2).keySet()) {
+                if (Math.abs(y2 - y1) == distance) {
+                    int y3 = y1 + distance;
+                    int y4 = y2 + distance;
+
+                    if (points.get(x1).containsKey(y3) && points.get(x1).containsKey(y4)) {
+                        int freq1 = points.get(x2).get(y2);
+                        int freq2 = points.get(x1).get(y3);
+                        int freq3 = points.get(x1).get(y4);
+
+                        count += freq1 * freq2 * freq3;
+                    }
+                }
+            }
+        }
+
+        return count;
+    }
+}
+Let me know if you need any further clarifications!
+
+
+
+
+
+
+You said:
+please provide coipable complexity
+ChatGPT said:
+ChatGPT
+Here are the time and space complexities for each problem and solution in a copiable format:
+
+1. Rotate Image
+Time Complexity:
+
+Transpose step: O(n^2) where n is the number of rows (or columns) in the matrix.
+Reverse rows step: O(n^2) as we reverse each row.
+Overall: O(n^2).
+Space Complexity: O(1) (in-place modification, no extra space required).
+
+2. Spiral Matrix
+Time Complexity: O(m * n) where m and n are the number of rows and columns in the matrix, respectively, since we visit each element once.
+
+Space Complexity: O(m * n) due to the space required for the result list.
+
+3. Set Matrix Zeroes
+Time Complexity:
+
+Finding zeroes: O(m * n) where m is the number of rows and n is the number of columns.
+Setting zeroes: O(m * n).
+Overall: O(m * n).
+Space Complexity: O(m + n) due to the space used for storing the rows and columns with zeroes.
+
+4. Happy Number
+Time Complexity: O(log n) where n is the input number, because each iteration reduces the number of digits by summing squares of the digits.
+
+Space Complexity: O(log n) for storing previously seen numbers in the HashSet.
+
+5. Plus One
+Time Complexity: O(n) where n is the length of the digits array, since in the worst case we need to iterate through all digits.
+
+Space Complexity: O(n) due to the space used for the result array in the case of a carry-over.
+
+6. Pow(x, n)
+Time Complexity: O(log n) because the exponentiation by squaring algorithm reduces the problem size by half with each iteration.
+
+Space Complexity: O(1) (constant space for the result and the temporary variable).
+
+7. Multiply Strings
+Time Complexity: O(m * n) where m and n are the lengths of the two input strings num1 and num2.
+
+Space Complexity: O(m + n) due to the space needed for the result array and the result string.
+
+8. Detect Squares
+Time Complexity: O(k * m) where k is the number of distinct x coordinates and m is the average number of points per x coordinate. In the worst case, we could compare each point with every other point.
+
+Space Complexity: O(k * m) where k is the number of distinct x coordinates and m is the number of y coordinates for each x.

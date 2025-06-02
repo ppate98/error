@@ -1,0 +1,179 @@
+https://leetcode.com/problems/maximum-subarray/
+class Solution {
+    public int maxSubArray(int[] nums) {
+        int currentSum = nums[0];
+        int maxSum = nums[0];
+        
+        for (int i = 1; i < nums.length; i++) {
+            currentSum = Math.max(nums[i], currentSum + nums[i]);
+            maxSum = Math.max(maxSum, currentSum);
+        }
+        
+        return maxSum;
+    }
+}
+
+
+https://leetcode.com/problems/jump-game/
+
+class Solution {
+    public boolean canJump(int[] nums) {
+        int lastIndex = nums.length - 1;
+        
+        for (int i = 0; i < nums.length; i++) {
+            if (i > lastIndex) {
+                break;
+            }
+            
+            if (i + nums[i] >= lastIndex) {
+                return true;
+            }
+            
+            if (i + nums[i] > lastIndex) {
+                lastIndex = i + nums[i];
+            }
+        }
+        
+        return false;
+    }
+}
+
+
+https://leetcode.com/problems/jump-game-ii/
+
+class Solution {
+    public int jump(int[] nums) {
+        int maxReach = 0;
+        int steps = 0;
+        int lastJump = 0;
+        
+        for (int i = 0; i < nums.length - 1; i++) {
+            maxReach = Math.max(maxReach, i + nums[i]);
+            
+            if (i == lastJump) {
+                lastJump = maxReach;
+                steps++;
+            }
+        }
+        
+        return steps;
+    }
+}
+
+
+https://leetcode.com/problems/gas-station/
+
+class Solution {
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int totalTank = 0;
+        int currentTank = 0;
+        int startStation = 0;
+        
+        for (int i = 0; i < gas.length; i++) {
+            int difference = gas[i] - cost[i];
+            totalTank += difference;
+            currentTank += difference;
+            
+            if (currentTank < 0) {
+                currentTank = 0;
+                startStation = i + 1;
+            }
+        }
+        
+        return (totalTank >= 0) ? startStation : -1;
+    }
+}
+
+
+https://leetcode.com/problems/hand-of-straights/
+import java.util.TreeMap;
+
+class Solution {
+    public boolean isNStraightHand(int[] hand, int W) {
+        TreeMap<Integer, Integer> countMap = new TreeMap<>();
+        
+        for (int card : hand) {
+            countMap.put(card, countMap.getOrDefault(card, 0) + 1);
+        }
+        
+        while (!countMap.isEmpty()) {
+            int smallestCard = countMap.firstKey();
+            
+            for (int i = smallestCard; i < smallestCard + W; i++) {
+                if (!countMap.containsKey(i)) {
+                    return false;
+                }
+                
+                int count = countMap.get(i);
+                if (count == 1) {
+                    countMap.remove(i);
+                } else {
+                    countMap.put(i, count - 1);
+                }
+            }
+        }
+        
+        return true;
+    }
+}
+
+
+https://leetcode.com/problems/partition-labels/
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+class Solution {
+    public List<Integer> partitionLabels(String S) {
+        List<Integer> partitionLengths = new ArrayList<>();
+        Map<Character, Integer> lastIndexMap = new HashMap<>();
+        
+        for (int i = 0; i < S.length(); i++) {
+            lastIndexMap.put(S.charAt(i), i);
+        }
+        
+        int start = 0;
+        int end = 0;
+        
+        for (int i = 0; i < S.length(); i++) {
+            end = Math.max(end, lastIndexMap.get(S.charAt(i)));
+            
+            if (i == end) {
+                partitionLengths.add(end - start + 1);
+                start = end + 1;
+            }
+        }
+        
+        return partitionLengths;
+    }
+}
+
+https://leetcode.com/problems/valid-parenthesis-string/
+
+class Solution {
+    public boolean checkValidString(String s) {
+        int minOpen = 0;
+        int maxOpen = 0;
+        
+        for (char c : s.toCharArray()) {
+            if (c == '(') {
+                minOpen++;
+                maxOpen++;
+            } else if (c == ')') {
+                minOpen--;
+                maxOpen--;
+            } else { // c == '*'
+                minOpen = Math.max(0, minOpen - 1);
+                maxOpen++;
+            }
+            
+            if (maxOpen < 0) {
+                return false;
+            }
+        }
+        
+        return minOpen == 0;
+    }
+}

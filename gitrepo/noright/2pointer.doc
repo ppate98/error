@@ -1,0 +1,479 @@
+
+2 pointer -
+
+
+
+https://leetcode.com/problems/valid-palindrome/   Time Complexity: O(n), space Complexity = o(1)
+ 
+
+public class Solution {
+    public boolean isPalindrome(String s) {
+        int left = 0;
+        int right = s.length() - 1;
+
+        while (left < right) {
+            while (left < right && !Character.isLetterOrDigit(s.charAt(left))) {
+                left++;
+            }
+
+            while (left < right && !Character.isLetterOrDigit(s.charAt(right))) {
+                right--;
+            }
+
+            if (left < right && Character.toLowerCase(s.charAt(left)) != Character.toLowerCase(s.charAt(right))) {
+                return false;
+            }
+
+            left++;
+            right--;
+        }
+
+        return true;
+    }
+}
+=== c ++
+
+#include <iostream>
+#include <cctype>
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    bool isPalindrome(string s) {
+        int left = 0;
+        int right = s.length() - 1;
+
+        while (left < right) {
+            while (left < right && !isalnum(s[left])) {
+                left++;
+            }
+            while (left < right && !isalnum(s[right])) {
+                right--;
+            }
+            if (tolower(s[left]) != tolower(s[right])) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+
+        return true;
+    }
+};
+
+// Usage
+int main() {
+    Solution solution;
+    string s = "A man, a plan, a canal: Panama";
+    cout << (solution.isPalindrome(s) ? "True" : "False") << endl;
+    return 0;
+}
+
+
+Explanation:
+Time Complexity: 
+O(n)
+The algorithm traverses the string only once with two pointers, so it takes linear time, where 
+n is the length of the string.
+Space Complexity: 
+O(1)
+The algorithm uses a constant amount of extra space.
+
+We initialize two pointers, left and right, pointing to the start and end of the string respectively.
+We use a while loop to iterate until left is less than right.
+Inside the loop, we use nested while loops to skip any non-alphanumeric characters from both ends of the string.
+We compare the characters at left and right, ignoring case. If they are not equal, the string is not a palindrome, and we return false.
+After each comparison, we increment left and decrement right to continue checking the remaining characters.
+If the loop completes without finding any unequal characters, the string is a valid palindrome, and we return true.
+This program optimizes the solution by using two pointers and avoids unnecessary comparisons with non-alphanumeric characters.
+
+
+
+
+
+
+
+
+
+https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/  Time Complexity: O(n), space Complexity = o(1)
+public class Solution {
+    public int[] twoSum(int[] numbers, int target) {
+        int left = 0;
+        int right = numbers.length - 1;
+
+        while (left < right) {
+            int sum = numbers[left] + numbers[right];
+
+            if (sum == target) {
+                return new int[]{left + 1, right + 1};
+            } else if (sum < target) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+
+        return new int[]{-1, -1};
+    }
+}
+
+
+=====================c++
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& numbers, int target) {
+        int left = 0, right = numbers.size() - 1;
+
+        while (left < right) {
+            int sum = numbers[left] + numbers[right];
+            if (sum == target) {
+                return {left + 1, right + 1};
+            } else if (sum < target) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+
+        return {-1, -1};
+    }
+};
+
+// Usage
+int main() {
+    Solution solution;
+    vector<int> numbers = {2, 7, 11, 15};
+    int target = 9;
+    vector<int> result = solution.twoSum(numbers, target);
+    cout << "Indices: " << result[0] << ", " << result[1] << endl;
+    return 0;
+}
+
+Time Complexity: 
+O(n)
+With two pointers traversing the sorted array from opposite ends, the algorithm completes in linear time, where 
+n is the length of the array.
+Space Complexity: 
+O(1)
+It uses a constant amount of extra space since only indices are being stored.
+
+
+
+
+https://leetcode.com/problems/3sum/ O(N^2),O(1)
+
+class FindTriplet {
+ 
+    // returns true if there is triplet with sum equal
+    // to 'sum' present in A[]. Also, prints the triplet
+    boolean find3Numbers(int A[], int arr_size, int sum)
+    {
+        int l, r;
+ 
+        /* Sort the elements */
+        quickSort(A, 0, arr_size - 1); //Or Arrays.sort(A);
+ 
+        /* Now fix the first element one by one and find the
+           other two elements */
+        for (int i = 0; i < arr_size - 2; i++) {
+ 
+            // To find the other two elements, start two
+            // index variables from two corners of the array
+            // and move them toward each other
+            l = i + 1; // index of the first element in the
+                       // remaining elements
+            r = arr_size - 1; // index of the last element
+            while (l < r) {
+                if (A[i] + A[l] + A[r] == sum) {
+                    System.out.print("Triplet is " + A[i] + ", " + A[l] + ", " + A[r]);
+                    return true;
+                }
+                else if (A[i] + A[l] + A[r] < sum)
+                    l++;
+ 
+                else // A[i] + A[l] + A[r] > sum
+                    r--;
+            }
+        }
+ 
+        // If we reach here, then no triplet was found
+        return false;
+    }
+ 
+    int partition(int A[], int si, int ei)
+    {
+        int x = A[ei];
+        int i = (si - 1);
+        int j;
+ 
+        for (j = si; j <= ei - 1; j++) {
+            if (A[j] <= x) {
+                i++;
+                int temp = A[i];
+                A[i] = A[j];
+                A[j] = temp;
+            }
+        }
+        int temp = A[i + 1];
+        A[i + 1] = A[ei];
+        A[ei] = temp;
+        return (i + 1);
+    }
+ 
+    /* Implementation of Quick Sort
+    A[] --> Array to be sorted
+    si  --> Starting index
+    ei  --> Ending index
+     */
+    void quickSort(int A[], int si, int ei)
+    {
+        int pi;
+ 
+        /* Partitioning index */
+        if (si < ei) {
+            pi = partition(A, si, ei);
+            quickSort(A, si, pi - 1);
+            quickSort(A, pi + 1, ei);
+        }
+    }
+ 
+    // Driver program to test above functions
+    public static void main(String[] args)
+    {
+        FindTriplet triplet = new FindTriplet();
+        int A[] = { 1, 4, 45, 6, 10, 8 };
+        int sum = 22;
+        int arr_size = A.length;
+ 
+        triplet.find3Numbers(A, arr_size, sum);
+    }
+}
+
+====== c++
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> result;
+
+        for (int i = 0; i < nums.size() - 2; i++) {
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
+            int left = i + 1, right = nums.size() - 1;
+
+            while (left < right) {
+                int sum = nums[i] + nums[left] + nums[right];
+                if (sum == 0) {
+                    result.push_back({nums[i], nums[left], nums[right]});
+                    while (left < right && nums[left] == nums[left + 1]) left++;
+                    while (left < right && nums[right] == nums[right - 1]) right--;
+                    left++;
+                    right--;
+                } else if (sum < 0) {
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+        }
+
+        return result;
+    }
+};
+
+// Usage
+int main() {
+    Solution solution;
+    vector<int> nums = {-1, 0, 1, 2, -1, -4};
+    vector<vector<int>> result = solution.threeSum(nums);
+    for (auto triplet : result) {
+        cout << "[" << triplet[0] << ", " << triplet[1] << ", " << triplet[2] << "]" << endl;
+    }
+    return 0;
+}
+
+TC :
+https://leetcode.com/problems/container-with-most-water/ o(n)/o(1)
+
+// Java code for Max
+// Water Container
+import java.util.*;
+ 
+class Area{
+ 
+    public int maxArea(int[] height) {
+        int maxArea = 0;
+        int left = 0;
+        int right = height.length - 1;
+
+        while (left < right) {
+            int currentArea = Math.min(height[left], height[right]) * (right - left);
+            maxArea = Math.max(maxArea, currentArea);
+
+            if (height[left] < height[right]) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+
+        return maxArea;
+    }
+     
+    public static void main(String[] args)
+    {
+        int a[] = {1, 5, 4, 3};
+        int b[] = {3, 1, 2, 4, 5};
+     
+       
+        System.out.print( maxArea(a)+"\n" );
+     
+   
+        System.out.print( maxArea(b) );
+    }
+	
+}
+
+c++ ===================
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int maxArea = 0, left = 0, right = height.size() - 1;
+
+        while (left < right) {
+            int currentArea = min(height[left], height[right]) * (right - left);
+            maxArea = max(maxArea, currentArea);
+            if (height[left] < height[right]) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+
+        return maxArea;
+    }
+};
+
+// Usage
+int main() {
+    Solution solution;
+    vector<int> height = {1, 8, 6, 2, 5, 4, 8, 3, 7};
+    cout << "Max Area: " << solution.maxArea(height) << endl;
+    return 0;
+}
+
+https://leetcode.com/problems/trapping-rain-water/  Time Complexity: O(n), space Complexity = o(1)
+
+
+public class Solution {
+    public int trap(int[] height) {
+        if (height == null || height.length == 0) {
+            return 0;
+        }
+
+        int left = 0;
+        int right = height.length - 1;
+        int leftMax = 0;
+        int rightMax = 0;
+        int trappedWater = 0;
+
+        while (left < right) {
+            if (height[left] < height[right]) {
+                if (height[left] > leftMax) {
+                    leftMax = height[left];
+                } else {
+                    trappedWater += leftMax - height[left];
+                }
+                left++;
+            } else {
+                if (height[right] > rightMax) {
+                    rightMax = height[right];
+                } else {
+                    trappedWater += rightMax - height[right];
+                }
+                right--;
+            }
+        }
+
+        return trappedWater;
+    }
+}
+==================== c++
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        if (height.empty()) return 0;
+
+        int left = 0, right = height.size() - 1;
+        int leftMax = 0, rightMax = 0;
+        int trappedWater = 0;
+
+        while (left < right) {
+            if (height[left] < height[right]) {
+                if (height[left] >= leftMax) {
+                    leftMax = height[left];
+                } else {
+                    trappedWater += leftMax - height[left];
+                }
+                left++;
+            } else {
+                if (height[right] >= rightMax) {
+                    rightMax = height[right];
+                } else {
+                    trappedWater += rightMax - height[right];
+                }
+                right--;
+            }
+        }
+
+        return trappedWater;
+    }
+};
+
+// Usage
+int main() {
+    Solution solution;
+    vector<int> height = {0,1,0,2,1,0,1,3,2,1,2,1};
+    cout << "Trapped Water: " << solution.trap(height) << endl;
+    return 0;
+}
+
+
+
+Explanation:
+
+We first handle the edge case where the height array is null or empty, returning 0 as there is no trapped water.
+We initialize left and right pointers to the start and end of the height array respectively.
+We also initialize leftMax and rightMax variables to keep track of the maximum height encountered from the left and right sides respectively.
+We initialize trappedWater variable to store the total amount of trapped water.
+We use a while loop to iterate until left is less than right.
+Inside the loop, we compare the heights at the left and right pointers to determine which side to process.
+If height[left] is smaller than height[right], we process the left side.
+If height[right] is smaller than or equal to height[left], we process the right side.
+For the left side processing, we check if the current height is greater than leftMax. If it is, we update leftMax with the current height. Otherwise, we add the difference between leftMax and the current height to trappedWater.
+For the right side processing, we check if the current height is greater than rightMax. If it is, we update rightMax with the current height. Otherwise, we add the difference between rightMax and the current height to trappedWater.
+After processing each side, we increment left or decrement right accordingly.
+Finally, we return the value of trappedWater, which represents the total amount of water trapped between the heights in the height array.
+This program optimizes the solution by using two pointers and keeping track of the maximum heights encountered from both sides. By comparing the heights and processing the side with the smaller height at each step, we efficiently calculate the amount of trapped water.
+
